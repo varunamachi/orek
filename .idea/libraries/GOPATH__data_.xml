@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;data&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../.." />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <excluded>
+      <root url="file://$PROJECT_DIR$/../../gorilla/securecookie/.git" />
+      <root url="file://$PROJECT_DIR$/../godzilla/.git" />
+      <root url="file://$PROJECT_DIR$/../../gorilla/context/.git" />
+      <root url="file://$PROJECT_DIR$/.idea" />
+      <root url="file://$PROJECT_DIR$/../../gorilla/sessions/.git" />
+      <root url="file://$PROJECT_DIR$/../../gorilla/mux/.git" />
+      <root url="file://$PROJECT_DIR$/data" />
+      <root url="file://$PROJECT_DIR$/.git" />
+      <root url="file://$PROJECT_DIR$/../godzilla/.idea" />
+      <root url="file://$PROJECT_DIR$" />
+    </excluded>
+  </library>
+</component>
