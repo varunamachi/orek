@@ -31,6 +31,7 @@ CREATE TABLE orek_source(
     location      VARCHAR( 255 ) NOT NULL,
     access        CHAR( 20 )     NOT NULL,
     PRIMARY KEY( source_id ),
+    UNIQUE( name, owner ),
     FOREIGN KEY( owner ) REFERENCES orek_user( user_name )
 );
 
@@ -91,6 +92,5 @@ CREATE TABLE orek_variable_value(
     value               VARCHAR( 256 ) NOT NULL,
     time                TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 CREATE INDEX idx_orek_var_value ON orek_variable_value( variable_id );
  
