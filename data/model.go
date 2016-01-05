@@ -1,4 +1,5 @@
 package data
+import "fmt"
 
 type User struct {
 	Name       string `json:"name"`
@@ -36,13 +37,21 @@ type VariableGroup struct {
 }
 
 func (user *User) String() string {
-	return user.Name + "[" + user.Email + "]"
+	return "User: " + user.Name + "[" + user.Email + "]"
 }
 
 func (source *Source) String() string {
-	return source.Name + "[" + source.SourceId + "]"
+	return "Source: " + source.Name + "[" + source.SourceId + "]"
 }
 
 func (variable *Variable) String() string {
-	return variable.Name + "[" + variable.SourceId + " : " + variable.VariableId + "]"
+	return "Variable: " + variable.Name + "[" + variable.SourceId + " : " + variable.VariableId + "]"
+}
+
+func (userGroup *UserGroup) String() string {
+	return fmt.Sprintf("UserGroup: %s [Owner: %s]", userGroup.Name, userGroup.Owner)
+}
+
+func (variableGroup *VariableGroup) String() string {
+	return fmt.Sprintf("VariableGroup: %s [Owner: %s]", variableGroup.Name, variableGroup.Owner)
 }
