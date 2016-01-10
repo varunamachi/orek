@@ -1,4 +1,5 @@
 package data
+
 import "fmt"
 
 type User struct {
@@ -24,15 +25,15 @@ type Variable struct {
 }
 
 type UserGroup struct {
-	Name string `json:"userGroupName"`
-	Owner string `json:"userGroupOwner"`
+	Name        string `json:"userGroupName"`
+	Owner       string `json:"userGroupOwner"`
 	description string `json:"userGroupDesc"`
 }
 
 type VariableGroup struct {
-	VarGroupId string `json:"varGroupId"`
-	Name string `json:"varGroupName"`
-	Owner string `json:"varGroupOwner"`
+	VarGroupId  string `json:"varGroupId"`
+	Name        string `json:"varGroupName"`
+	Owner       string `json:"varGroupOwner"`
 	description string `json:"varGroupDesc"`
 }
 

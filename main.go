@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/varunamachi/orek/data"
 	"fmt"
+	"github.com/varunamachi/orek/data"
 )
 
 func main() {
