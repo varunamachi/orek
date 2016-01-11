@@ -8,16 +8,17 @@
     <excluded>
       <root url="file://$PROJECT_DIR$/../../gorilla/securecookie/.git" />
       <root url="file://$PROJECT_DIR$/../godzilla/.git" />
-      <root url="file://$PROJECT_DIR$/../../satori/go.uuid/.git" />
-      <root url="file://$PROJECT_DIR$/../../gorilla/context/.git" />
       <root url="file://$PROJECT_DIR$/.idea" />
-      <root url="file://$PROJECT_DIR$/../../gorilla/sessions/.git" />
       <root url="file://$PROJECT_DIR$/../../jmoiron/sqlx/.git" />
       <root url="file://$PROJECT_DIR$/../../gorilla/mux/.git" />
       <root url="file://$PROJECT_DIR$/data" />
       <root url="file://$PROJECT_DIR$/.git" />
-      <root url="file://$PROJECT_DIR$/../godzilla/.idea" />
       <root url="file://$PROJECT_DIR$" />
+      <root url="file://$PROJECT_DIR$/../../satori/go.uuid/.git" />
+      <root url="file://$PROJECT_DIR$/../../gorilla/context/.git" />
+      <root url="file://$PROJECT_DIR$/../../gorilla/sessions/.git" />
+      <root url="file://$PROJECT_DIR$/../../go-sql-driver/mysql/.git" />
+      <root url="file://$PROJECT_DIR$/../godzilla/.idea" />
     </excluded>
   </library>
 </component>
