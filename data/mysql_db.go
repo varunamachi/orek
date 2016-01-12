@@ -42,6 +42,9 @@ func (mdb *MysqlDb) GetAllUsers() ([]*User, error) {
                 users = append(users, user)
             }
         }
+        if err = rows.Err(); err != nil {
+            log.Print("Error occured while iterating over the results")
+        }
     } else {
         log.Print("Error occured while retrieving list of users")
     }
@@ -50,12 +53,57 @@ func (mdb *MysqlDb) GetAllUsers() ([]*User, error) {
 
 func (mdb *MysqlDb) GetUser(userName string) (*User, error) {
 	const MYSQL_GET_USER = `SELECT * FROM orek_user WHERE user_name = ?;`
-	return nil, nil
+    stmt, err := mdb.Prepare( MYSQL_GET_USER );
+    var user *User
+    if err == nil {
+        defer stmt.Close()
+        var row sql.Row
+        row, err := stmt.QueryRow(userName)
+        if err == nil {
+            err = row.Scan( &user.Name,
+                &user.FirstName,
+                &user.SecondName,
+                &user.Email )
+            if err != nil {
+                log.Printf(`Error occured while reading info about user with
+                        name %s`, userName)
+            }
+        } else {
+            log.Printf(`Error occured while querying info about user %s from
+                        database`, userName)
+        }
+    } else {
+        log.Print(`Error occured while preparing query to get user info`)
+    }
+	return user, err
 }
 
 func (mdb *MysqlDb) GetUserWithEmail(email string) (*User, error) {
-	const MYSQL_GET_USER_WITH_EMAIL = `SELECT * FROM orek_user WHERE email = "?";`
-	return nil, nil
+	const MYSQL_GET_USER_WITH_EMAIL = `SELECT * FROM orek_user
+	                                    WHERE email = "?";`
+    stmt, err := mdb.Prepare( MYSQL_GET_USER_WITH_EMAIL );
+    var user *User
+    if err == nil {
+        defer stmt.Close()
+        var row sql.Row
+        row, err := stmt.QueryRow(email)
+        if err == nil {
+            err = row.Scan( &user.Name,
+                &user.FirstName,
+                &user.SecondName,
+                &user.Email )
+            if err != nil {
+                log.Printf(`Error occured while reading info about user with
+                        email %s`, email)
+            }
+        } else {
+            log.Printf(`Error occured while querying info about user with email
+                         %s from database`, email)
+        }
+    } else {
+        log.Print(`Error occured while preparing query to get user info`)
+    }
+    return user, err
 }
 
 func (mdb *MysqlDb) CreateOrUpdateUser(user *User) error {
@@ -69,6 +117,8 @@ func (mdb *MysqlDb) CreateOrUpdateUser(user *User) error {
             last_name = VALUES( last_name );
             email = VALUES( email );`
 	return nil
+//    tx, err := mdb.Begin()
+
 }
 
 func (mdb *MysqlDb) DeleteUser(userId string) error {
