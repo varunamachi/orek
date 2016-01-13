@@ -12,8 +12,11 @@ type User struct {
 type Source struct {
 	SourceId    string `json:"sourceId"`
 	Name        string `json:"sourceName"`
-	owner       string `json:"owner"`
-	description string `json:"description"`
+	Owner       string `json:"owner"`
+	Description string `json:"description"`
+	Location    string `json:"location"`
+    Access      string `json:"access"`
+
 }
 
 type Variable struct {
