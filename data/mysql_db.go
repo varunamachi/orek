@@ -122,15 +122,15 @@ func (mdb *MysqlDb) CreateOrUpdateUser(user *User) error {
 	}
 	stmt, err := mdb.Prepare(MYSQL_CREATE_OR_UPDATE_USER)
 	if err == nil {
-        defer stmt.Close()
+		defer stmt.Close()
 		_, err = stmt.Exec(user.Name,
 			user.FirstName,
 			user.SecondName,
 			user.Email)
-        if err != nil {
-            log.Printf( `Error occured while creating/updating the user with
+		if err != nil {
+			log.Printf(`Error occured while creating/updating the user with
                         name %s`, user.Name)
-        }
+		}
 	} else {
 		log.Printf(`Error occured while preparing statement to create/update
                     user in %s the database`, user.Name)
@@ -140,123 +140,123 @@ func (mdb *MysqlDb) CreateOrUpdateUser(user *User) error {
 
 func (mdb *MysqlDb) DeleteUser(userId string) error {
 	const MYSQL_DELETE_USER = `DELETE FROM orek_user WHERE user_name = ?;`
-    stmt, err := mdb.Prepare(MYSQL_DELETE_USER)
-    if err == nil {
-        defer stmt.Close()
-        _, err = stmt.Exec(userId)
-        if err != nil {
-            log.Printf(`Error occured while deleting information about user
+	stmt, err := mdb.Prepare(MYSQL_DELETE_USER)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(userId)
+		if err != nil {
+			log.Printf(`Error occured while deleting information about user
                         with name %s from database`, userId)
-        }
-    } else {
-        log.Printf(`Error occured while preparing query to delete user %s`,
-                    userId)
-    }
+		}
+	} else {
+		log.Printf(`Error occured while preparing query to delete user %s`,
+			userId)
+	}
 	return err
 }
 
 func (mdb *MysqlDb) GetAllSources() ([]*Source, error) {
 	const MYSQL_GET_ALL_SOURCES = `SELECT * FROM orek_source;`
-    sources := make([]*Source, 10)
-    stmt, err := mdb.Prepare(MYSQL_GET_ALL_SOURCES)
-    if err == nil {
-        defer stmt.Close()
-        var rows sql.Rows
-        rows, err = stmt.Query()
-        if err == nil {
-            defer rows.Close()
-            for rows.Next() {
-                source := &Source{}
-                err = rows.Scan( &source.SourceId,
-                    &source.Name,
-                    &source.Owner,
-                    &source.Description,
-                    &source.Location,
-                    &source.Access)
-                if err == nil {
-                    source = append(sources, source)
-                } else {
-                    log.Printf(`Error occured while getting the list of
+	sources := make([]*Source, 10)
+	stmt, err := mdb.Prepare(MYSQL_GET_ALL_SOURCES)
+	if err == nil {
+		defer stmt.Close()
+		var rows sql.Rows
+		rows, err = stmt.Query()
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				source := &Source{}
+				err = rows.Scan(&source.SourceId,
+					&source.Name,
+					&source.Owner,
+					&source.Description,
+					&source.Location,
+					&source.Access)
+				if err == nil {
+					source = append(sources, source)
+				} else {
+					log.Printf(`Error occured while getting the list of
                                 sources from the database`)
-                    break
-                }
-            }
-            if err = rows.Err(); err != nil {
-                log.Printf(`Error occured while finishing the source list
+					break
+				}
+			}
+			if err = rows.Err(); err != nil {
+				log.Printf(`Error occured while finishing the source list
                             fetch operation`)
-            }
-        } else {
-            log.Printf(`Error occured while querying for the list of
+			}
+		} else {
+			log.Printf(`Error occured while querying for the list of
                                 sources from the database`)
-        }
-    } else {
-        log.Printf(`Error occured while preparing query to get the list of
+		}
+	} else {
+		log.Printf(`Error occured while preparing query to get the list of
                      sources`)
-    }
+	}
 	return err, sources
 }
 
 func (mdb *MysqlDb) GetSource(sourceName, owner string) (*Source, error) {
 	const MYSQL_GET_SOURCE = `SELECT * FROM orek_source
 	                            WHERE name = ? AND owner = ?;`
-    source := &Source{}
-    stmt, err := mdb.Prepare(MYSQL_GET_SOURCE)
-    if err == nil {
-        defer stmt.Close()
-        var row sql.Row
-        row, err = stmt.QueryRow(sourceName, owner)
-        if err == nil {
-            err = row.Scan( &source.SourceId,
-                &source.Name,
-                &source.Owner,
-                &source.Description,
-                &source.Location,
-                &source.Access)
-            if err != nil {
-                log.Printf(`Error occured while getting info about source
+	source := &Source{}
+	stmt, err := mdb.Prepare(MYSQL_GET_SOURCE)
+	if err == nil {
+		defer stmt.Close()
+		var row sql.Row
+		row, err = stmt.QueryRow(sourceName, owner)
+		if err == nil {
+			err = row.Scan(&source.SourceId,
+				&source.Name,
+				&source.Owner,
+				&source.Description,
+				&source.Location,
+				&source.Access)
+			if err != nil {
+				log.Printf(`Error occured while getting info about source
                             with name '%s' owned by '%s'`, sourceName, owner)
-            }
-        } else {
-            log.Printf(`Error occured while querying for info about source
+			}
+		} else {
+			log.Printf(`Error occured while querying for info about source
                     with name '%s' owned by '%s'`, sourceName, owner)
-        }
-    } else {
-        log.Printf(`Error occured while preparing query to get info about source
+		}
+	} else {
+		log.Printf(`Error occured while preparing query to get info about source
                     with name '%s' owned by '%s'`, sourceName, owner)
-    }
-    return err, source
+	}
+	return err, source
 }
 
 func (mdb *MysqlDb) GetSourceWithId(sourceId string) (*Source, error) {
 	const MYSQL_GET_SOURCE_WITH_ID = `SELECT * FROM orek_source WHERE
 	                                  source_id = ?;`
 
-    source := &Source{}
-    stmt, err := mdb.Prepare(MYSQL_GET_SOURCE_WITH_ID)
-    if err == nil {
-        defer stmt.Close()
-        var row sql.Row
-        row, err = stmt.QueryRow(sourceId)
-        if err == nil {
-            err = row.Scan( &source.SourceId,
-                &source.Name,
-                &source.Owner,
-                &source.Description,
-                &source.Location,
-                &source.Access)
-            if err != nil {
-                log.Printf(`Error occured while getting info about source
+	source := &Source{}
+	stmt, err := mdb.Prepare(MYSQL_GET_SOURCE_WITH_ID)
+	if err == nil {
+		defer stmt.Close()
+		var row sql.Row
+		row, err = stmt.QueryRow(sourceId)
+		if err == nil {
+			err = row.Scan(&source.SourceId,
+				&source.Name,
+				&source.Owner,
+				&source.Description,
+				&source.Location,
+				&source.Access)
+			if err != nil {
+				log.Printf(`Error occured while getting info about source
                             with id '%s'`, sourceId)
-            }
-        } else {
-            log.Printf(`Error occured while querying for info about source
+			}
+		} else {
+			log.Printf(`Error occured while querying for info about source
                     with id '%s'`, sourceId)
-        }
-    } else {
-        log.Printf(`Error occured while preparing query to get info about source
+		}
+	} else {
+		log.Printf(`Error occured while preparing query to get info about source
                     with id '%s'`, sourceId)
-    }
-    return err, source
+	}
+	return err, source
 }
 
 func (mdb *MysqlDb) CreateOrUpdateSource(source *Source) error {
@@ -274,60 +274,137 @@ func (mdb *MysqlDb) CreateOrUpdateSource(source *Source) error {
             location = VALUES( location ),
             access = VALUES( access );`
 
-    if source == nil {
-        return errors.New("Create/Update Source: Invalid object given")
-    }
-    stmt, err := mdb.Prepare(MYSQL_CREATE_OR_UPDATE_SOURCE)
-    if err == nil {
-        defer stmt.Close()
-        _, err = stmt.Exec(source.SourceId,
-            source.Name,
-            source.Owner,
-            source.Description,
-            source.Location,
-            source.Access)
-        if err != nil {
-            log.Printf( `Error occured while creating/updating the source with
+	if source == nil {
+		return errors.New("Create/Update Source: Invalid object given")
+	}
+	stmt, err := mdb.Prepare(MYSQL_CREATE_OR_UPDATE_SOURCE)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(source.SourceId,
+			source.Name,
+			source.Owner,
+			source.Description,
+			source.Location,
+			source.Access)
+		if err != nil {
+			log.Printf(`Error occured while creating/updating the source with
                         id %s`, source.SourceId)
-        }
-    } else {
-        log.Printf(`Error occured while preparing statement to create/update
+		}
+	} else {
+		log.Printf(`Error occured while preparing statement to create/update
                     source with id %s the database`, source.SourceId)
-    }
-    return err
+	}
+	return err
 }
 
 func (mdb *MysqlDb) DeleteSource(sourceId string) error {
 	const MYSQL_DELETE_SOURCE = `DELETE FROM orek_source WHERE source_id = ?;`
-    stmt, err := mdb.Prepare(MYSQL_DELETE_SOURCE)
-    if err == nil {
-        defer stmt.Close()
-        _, err = stmt.Exec(sourceId)
-        if err != nil {
-            log.Printf(`Error occured while deleting information about source
+	stmt, err := mdb.Prepare(MYSQL_DELETE_SOURCE)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(sourceId)
+		if err != nil {
+			log.Printf(`Error occured while deleting information about source
                         with id  %s from database`, sourceId)
-        }
-    } else {
-        log.Printf(`Error occured while preparing query to delete source with
+		}
+	} else {
+		log.Printf(`Error occured while preparing query to delete source with
                     id %s`, sourceId)
-    }
-    return err
+	}
+	return err
 }
 
 func (mdb *MysqlDb) GetAllVariables() ([]*Variable, error) {
+	variables := make([]*Variable, 10)
 	const MYSQL_GET_ALL_VARIABLE = `SELECT * FROM orek_variable;`
-	return nil, nil
+	stmt, err := mdb.Prepare(MYSQL_GET_ALL_VARIABLE)
+	if err == nil {
+		defer stmt.Close()
+		var rows sql.Rows
+		rows, err = stmt.Query()
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				variable := &Variable{}
+				err = rows.Scan(&variable.VariableId,
+					&variable.Name,
+					&variable.SourceId,
+					&variable.Description,
+					&variable.Unit)
+				if err == nil {
+					variables = append(variables, variable)
+				} else {
+					log.Printf(`Error occured while retrieving list of variables from the database`)
+					break
+				}
+			}
+			if err = rows.Err(); err != nil {
+				log.Printf(`Error occured while retrieving list of variables from the database`)
+			}
+		} else {
+			log.Printf(`Error while querying list of variables from the database`)
+		}
+	} else {
+		log.Printf(`Failed to get the list of variables`)
+	}
+	return variables, err
 }
 
 func (mdb *MysqlDb) GetVariable(sourceId, name string) (*Variable, error) {
 	const MYSQL_GET_VARIABLE = `SELECT * FROM orek_variable WHERE name = ?
                                     AND source_id = ?;`
-	return nil, nil
+	stmt, err := mdb.Prepare(MYSQL_GET_VARIABLE)
+	variable := &Variable{}
+	if err == nil {
+		defer stmt.Close()
+		var row sql.Row
+		row, err = stmt.QueryRow(sourceId, name)
+		if err == nil {
+			err = row.Scan(&variable.VariableId,
+				&variable.Name,
+				&variable.SourceId,
+				&variable.Description,
+				&variable.Unit)
+			if err != nil {
+				log.Printf(`Error occured while retrieving variable %s:%s`, sourceId, name)
+				break
+			}
+
+		} else {
+			log.Printf(`Error while querying variable %s:%s from the database`, sourceId, name)
+		}
+	} else {
+		log.Printf(`Failed to get variable %s:%s from database`, sourceId, name)
+	}
+	return variable, err
 }
 
 func (mdb *MysqlDb) GetVariableWithId(variableId string) (*Variable, error) {
 	const MYSQL_GET_VARIABLE_WITH_ID = `SELECT * FROM orek_variable WHERE variable_id = ?;`
-	return nil, nil
+	stmt, err := mdb.Prepare(MYSQL_GET_VARIABLE_WITH_ID)
+	variable := &Variable{}
+	if err == nil {
+		defer stmt.Close()
+		var row sql.Row
+		row, err = stmt.QueryRow(variableId)
+		if err == nil {
+			err = row.Scan(&variable.VariableId,
+				&variable.Name,
+				&variable.SourceId,
+				&variable.Description,
+				&variable.Unit)
+			if err != nil {
+				log.Printf(`Error occured while retrieving variable %s`, variableId)
+				break
+			}
+
+		} else {
+			log.Printf(`Error while querying variable %s from the database`, variableId)
+		}
+	} else {
+		log.Printf(`Failed to get variable %s from database`, variableId)
+	}
+	return variable, err
 }
 
 func (mdb *MysqlDb) CreateOrUpdateVariable(variable *Variable) error {
@@ -342,12 +419,41 @@ func (mdb *MysqlDb) CreateOrUpdateVariable(variable *Variable) error {
                 source_id = VALUES( source_id ),
                 description = VALUES( description ),
                 unit = VALUES( unit );`
-	return nil
+	if variable == nil {
+		return errors.New("Create/Update Variable: Invalid object given")
+	}
+	stmt, err := mdb.Prepare(MYSQL_CREATE_OR_UPDATE_VARIABLE)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(variable.VariableId,
+			variable.Name,
+			variable.SourceId,
+			variable.Description,
+			variable.Unit)
+		if err != nil {
+			log.Printf(`Error occured while creating/updating variable with id %s`,
+				variable.VariableId)
+		}
+	} else {
+		log.Printf(`Error occured while preparing query for create/update variable %s`,
+					variable.VariableId)
+	}
+	return err
 }
 
 func (mdb *MysqlDb) DeleteVariable(variableId string) error {
 	const MYSQL_DELETE_VARIABLE = `DELETE FROM orek_variable WHERE variable_id = ?;`
-	return nil
+	stmt, err := mdb.Prepare(MYSQL_DELETE_VARIABLE)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(variableId)
+		if err != nil {
+			log.Printf(`Failed to delete variable with id %s`, variableId)
+		}
+	} else {
+		log.Printf(`Error occured while preparing query to delete variable with id %s`, variableId)
+	}
+	return err
 }
 
 func (mdb *MysqlDb) GetAllUserGroups() ([]*UserGroup, error) {

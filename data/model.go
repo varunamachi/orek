@@ -23,21 +23,21 @@ type Variable struct {
 	VariableId  string `json:"variableId"`
 	Name        string `json:"variableName"`
 	SourceId    string `json:"sourceId"`
-	description string `json:"description"`
-	unit        string `json:"unit"`
+	Description string `json:"description"`
+	Unit        string `json:"unit"`
 }
 
 type UserGroup struct {
 	Name        string `json:"userGroupName"`
 	Owner       string `json:"userGroupOwner"`
-	description string `json:"userGroupDesc"`
+	Description string `json:"userGroupDesc"`
 }
 
 type VariableGroup struct {
 	VarGroupId  string `json:"varGroupId"`
 	Name        string `json:"varGroupName"`
 	Owner       string `json:"varGroupOwner"`
-	description string `json:"varGroupDesc"`
+	Description string `json:"varGroupDesc"`
 }
 
 func (user *User) String() string {
