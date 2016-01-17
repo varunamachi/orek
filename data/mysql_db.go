@@ -436,7 +436,7 @@ func (mdb *MysqlDb) CreateOrUpdateVariable(variable *Variable) error {
 		}
 	} else {
 		log.Printf(`Error occured while preparing query for create/update variable %s`,
-					variable.VariableId)
+			variable.VariableId)
 	}
 	return err
 }
@@ -458,28 +458,105 @@ func (mdb *MysqlDb) DeleteVariable(variableId string) error {
 
 func (mdb *MysqlDb) GetAllUserGroups() ([]*UserGroup, error) {
 	const MYSQL_GET_ALL_USER_GROUPS = `SELECT * FROM orek_user_group;`
-	return nil, nil
+	groups := make([]*UserGroup, 10)
+	stmt, err := mdb.Prepare(MYSQL_GET_ALL_USER_GROUPS)
+	if err == nil {
+		defer stmt.Close()
+		var rows sql.Rows
+		rows, err = stmt.Query()
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				ugrp := &UserGroup{}
+				err = rows.Scan(&ugrp.Name, &ugrp.Owner, ugrp.Description)
+				if err == nil {
+					groups = append(groups, ugrp)
+				} else {
+					log.Printf(`Error occured while reading user group list from database`)
+					break
+				}
+			}
+			if err = rows.Err(); err != nil {
+				log.Printf(`Error occured while reading list of user group from database`)
+			}
+		} else {
+			log.Printf(`Failed to fetch user group list from DB `)
+		}
+	} else {
+		log.Printf(`Failed to prepare query for getting the list of user groups`)
+	}
+	return groups, err
 }
 
 func (mdb *MysqlDb) GetUserGroup(userGroupName string) (*UserGroup, error) {
 	const MYSQL_GET_USER_GROUP = `SELECT * FROM orek_user_group WHERE name = ?;`
-	return nil, nil
+	ugrp := &UserGroup{}
+	stmt, err := mdb.Prepare(MYSQL_GET_USER_GROUP)
+	if err == nil {
+		defer stmt.Close()
+		var row sql.Row
+		row, err = stmt.Query()
+		if err == nil {
+			err = row.Scan(&ugrp.Name, &ugrp.Owner, ugrp.Description)
+			if err != nil {
+				log.Printf(`Error occured while reading info about user
+				            group %s`, userGroupName)
+			}
+		} else {
+			log.Printf(`Failed to fetch info about user group %s`,
+				userGroupName)
+		}
+	} else {
+		log.Printf(`Failed to prepare query for getting the info about user
+		            group %s`, userGroupName)
+	}
+	return ugrp, err
 }
 
 func (mdb *MysqlDb) CreateOrUpdateUserGroup(userGroup *UserGroup) error {
-	const MYSQL_CREATE_OR_UPDATE_USER_GROUP = `INSERT INTO orek_user_group( name,
-                             owner,
-                             description )
+	const MYSQL_CREATE_OR_UPDATE_USER_GROUP = `INSERT INTO orek_user_group(
+	                        name,
+                            owner,
+                            description )
         VALUES( ?, ?, ? )
         ON DUPLICATE KEY UPDATE
             owner = VALUES( owner ),
             description = VALUES( description );`
-	return nil, nil
+	if userGroup == nil {
+		return errors.New("Create/Update User Group: Invalid object given")
+	}
+	stmt, err := mdb.Prepare(MYSQL_CREATE_OR_UPDATE_USER_GROUP)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(userGroup.Name,
+			userGroup.Owner,
+			userGroup.Description)
+		if err != nil {
+			log.Printf(`Error occured while creating/updating user group '%s'`,
+				userGroup)
+		}
+	} else {
+		log.Printf(`Error while preparing query for creating/updating user
+                    group with name %s`, userGroup.Name)
+	}
+	return err
 }
 
 func (mdb *MysqlDb) DeleteUserGroup(userGroupName string) error {
-	const MYSQL_DELETE_USER_GROUP = `DELETE FROM orek_user_group WHERE name = ?;`
-	return nil
+	const MYSQL_DELETE_USER_GROUP = `DELETE FROM orek_user_group WHERE
+	                                 name = ?;`
+    stmt, err := mdb.Prepare(MYSQL_DELETE_USER_GROUP)
+    if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(userGroupName)
+		if err != nil {
+			log.Printf(`Failed to delete user group '%s'`, userGroupName)
+		}
+    } else {
+		log.Printf(`Failed to prepare query to delete user group '%s'`,
+			userGroupName)
+    }
+	return err
 }
 
 func (mdb *MysqlDb) GetAllVariableGroups() ([]*VariableGroup, error) {
