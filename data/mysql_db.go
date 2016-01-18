@@ -545,36 +545,124 @@ func (mdb *MysqlDb) CreateOrUpdateUserGroup(userGroup *UserGroup) error {
 func (mdb *MysqlDb) DeleteUserGroup(userGroupName string) error {
 	const MYSQL_DELETE_USER_GROUP = `DELETE FROM orek_user_group WHERE
 	                                 name = ?;`
-    stmt, err := mdb.Prepare(MYSQL_DELETE_USER_GROUP)
-    if err == nil {
+	stmt, err := mdb.Prepare(MYSQL_DELETE_USER_GROUP)
+	if err == nil {
 		defer stmt.Close()
 		_, err = stmt.Exec(userGroupName)
 		if err != nil {
 			log.Printf(`Failed to delete user group '%s'`, userGroupName)
 		}
-    } else {
+	} else {
 		log.Printf(`Failed to prepare query to delete user group '%s'`,
 			userGroupName)
-    }
+	}
 	return err
 }
 
 func (mdb *MysqlDb) GetAllVariableGroups() ([]*VariableGroup, error) {
 	const MYSQL_GET_ALL_VARIABLE_GROUPS = `SELECT * FROM orek_variable_group;`
-	return nil, nil
+	stmt, err := mdb.Prepare(MYSQL_GET_ALL_VARIABLE_GROUPS)
+	varGroups := make([]*VariableGroup, 10)
+	if err != nil {
+		defer stmt.Close()
+		var rows sql.Rows
+		rows, err = stmt.Query()
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				group := &VariableGroup{}
+				err = rows.Scan(&group.VarGroupId,
+					&group.Name,
+					&group.Owner,
+					&group.Description,
+					&group.Access)
+				if err == nil {
+					varGroups = append(varGroups, group)
+				} else {
+					log.Printf(`Error occured while reading list of variable groups`)
+					break
+				}
+			}
+			if err == rows.Err(); err != nil {
+				log.Printf(`Error occured while reading list of variable groups`)
+			}
+		} else {
+			log.Printf(`Failed to fetch list variable groups`)
+		}
+
+	} else {
+		log.Printf(`Error while preparing query to fetch variable group list`)
+	}
+	return varGroups, err
 }
 
 func (mdb *MysqlDb) GetVariableGroup(varGroupName, owner string) (*VariableGroup, error) {
 	const MYSQL_GET_VARIABLE_GROUP = `SELECT * FROM orek_variable_group WHERE name = ? AND owner = ?;`
-	return nil, nil
+	var varGroup *VariableGroup
+	stmt, err := mdb.Prepare(MYSQL_GET_VARIABLE_GROUP)
+	if err != nil {
+		defer stmt.Close()
+		var row sql.Row
+		row, err = stmt.QueryRow(varGroupName, owner)
+		if err == nil {
+			err = row.Scan(&varGroup.VarGroupId,
+				&varGroup.Name,
+				&varGroup.Owner,
+				&varGroup.Description,
+				&varGroup.Access)
+			if err == nil {
+				varGroup = append(varGroup, varGroup)
+			} else {
+				log.Printf(`Error occured while reading variable group '%s' owned by %s`,
+					varGroupName, owner)
+				break
+			}
+		} else {
+			log.Printf(`Error occured while reading variable group '%s' owned by %s`,
+				varGroupName, owner)
+		}
+
+	} else {
+		log.Printf(`Error while preparing query to fetch variable group '%s' owned by %s`,
+			varGroupName, owner)
+	}
+	return varGroup, err
 }
 
 func (mdb *MysqlDb) GetVariableGroupWithId(varGroupId string) (*VariableGroup, error) {
 	const MYSQL_GET_VARIABLE_WITH_GROUP = `SELECT * FROM orek_variable_group WHERE group_id = ?;`
-	return nil, nil
+	var varGroup *VariableGroup
+	stmt, err := mdb.Prepare(MYSQL_GET_VARIABLE_WITH_GROUP)
+	if err != nil {
+		defer stmt.Close()
+		var row sql.Row
+		row, err = stmt.QueryRow(varGroupId)
+		if err == nil {
+			err = row.Scan(&varGroup.VarGroupId,
+				&varGroup.Name,
+				&varGroup.Owner,
+				&varGroup.Description,
+				&varGroup.Access)
+			if err == nil {
+				varGroup = append(varGroup, varGroup)
+			} else {
+				log.Printf(`Error occured while reading variable group '%s'`, varGroupId)
+				break
+			}
+		} else {
+			log.Printf(`Error occured while reading variable group '%s'`, varGroupId)
+		}
+
+	} else {
+		log.Printf(`Error while preparing query to fetch variable group '%s'`, varGroupId)
+	}
+	return varGroup, err
 }
 
 func (mdb *MysqlDb) CreateOrUpdateVariableGroup(variableGroup *VariableGroup) error {
+	if variableGroup == nil {
+		return errors.New(`Failed to create/update variable group: Invalid object give`)
+	}
 	const CREATE_OR_UPDATE_VARIABLE_GROUP = `INSERT INTO orek_variable_group( group_id,
                                  name,
                                  owner,
@@ -586,12 +674,39 @@ func (mdb *MysqlDb) CreateOrUpdateVariableGroup(variableGroup *VariableGroup) er
         owner = VALUES( owner ),
         description = VALUES( description ),
         access = VALUES( access );`
-	return nil
+	stmt, err := mdb.Prepare(CREATE_OR_UPDATE_VARIABLE_GROUP)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(variableGroup.VarGroupId,
+			variableGroup.Name,
+			variableGroup.Owner,
+			variableGroup.Description,
+			variableGroup.Access)
+		if err != nil {
+			log.Printf(`Failed to create/update variable group '%s' in DB`,
+				variableGroup.VarGroupId)
+		}
+	} else {
+		log.Printf(`Error occured while preparing query for creating/updating user group %`,
+			variableGroup.VarGroupId)
+	}
+	return err
 }
 
 func (mdb *MysqlDb) DeleteVariableGroup(varGroupId string) error {
 	const MYSQL_REMOVE_VARIABLE_GROUP = `DELETE FROM orek_variable_group WHERE group_id = ?;`
-	return nil
+	stmt, err := mdb.Prepare(MYSQL_REMOVE_VARIABLE_GROUP)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(varGroupId)
+		if err != nil {
+			log.Printf(`Error occured while deleting variable group '%s`, varGroupId)
+		}
+	} else {
+		log.Printf(`Error occured while preparing query for deleing a variable group %s`,
+			varGroupId)
+	}
+	return err
 }
 
 func (mdb *MysqlDb) AddUserToGroup(userName string, groupName string) error {

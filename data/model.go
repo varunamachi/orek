@@ -38,6 +38,7 @@ type VariableGroup struct {
 	Name        string `json:"varGroupName"`
 	Owner       string `json:"varGroupOwner"`
 	Description string `json:"varGroupDesc"`
+	Access		string `json:"access"`
 }
 
 func (user *User) String() string {
