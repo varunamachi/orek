@@ -716,7 +716,7 @@ func (mdb *MysqlDb) AddUserToGroup(userName, groupName string) error {
 	stmt, err := mdb.Prepare(MYSQL_ADD_USER_TO_GROUP)
 	if err == nil {
 		defer stmt.Close()
-		_, err = mdb.Exec(userName, groupName)
+		_, err = mdb.Exec(groupName, userName)
 		if err != nil {
 			log.Printf(`Error occured while adding user '%s' to group '%s'`,
 				userName, groupName)
@@ -750,110 +750,247 @@ func (mdb *MysqlDb) RemoveUserFromGroup(userName string,
 func (mdb *MysqlDb) GetUsersInGroup(groupName string) ([]*User, error) {
 	const MYSQL_GET_USERS_IN_GROUP = `SELECT user_name FROM orek_user_to_group
 	                                    WHERE group_name = ?;`
-    stmt, err := mdb.Prepare(MYSQL_GET_USERS_IN_GROUP)
-    users := make([]*User, 10)
-    if err == nil {
-        defer stmt.Close()
-        var rows sql.Rows
-        rows, err = stmt.Query(groupName)
-        if err == nil {
-            defer rows.Close()
-            for rows.Next() {
-                var userName string
-                err = rows.Scan(&userName)
-                if err == nil {
-                    user, err := mdb.GetUser(userName)
-                    if err == nil {
-                        users = append(users, user)
-                    } else {
-                        break
-                    }
-                } else {
-                    log.Printf(`Error occured while reading list of user names
+	stmt, err := mdb.Prepare(MYSQL_GET_USERS_IN_GROUP)
+	users := make([]*User, 10)
+	if err == nil {
+		defer stmt.Close()
+		var rows sql.Rows
+		rows, err = stmt.Query(groupName)
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var userName string
+				err = rows.Scan(&userName)
+				if err == nil {
+					user, err := mdb.GetUser(userName)
+					if err == nil {
+						users = append(users, user)
+					} else {
+						break
+					}
+				} else {
+					log.Printf(`Error occured while reading list of user names
                         in group '%s'`, groupName)
-                    break
-                }
-            }
-            err = rows.Err()
-        } else {
-            log.Printf(`Failed to to get users in group '%s`, groupName)
-        }
-    } else {
-        log.Printf(`Failed to prepare query to get users in group '%s`,
-            groupName)
-    }
+					break
+				}
+			}
+			err = rows.Err()
+		} else {
+			log.Printf(`Failed to to get users in group '%s`, groupName)
+		}
+	} else {
+		log.Printf(`Failed to prepare query to get users in group '%s`,
+			groupName)
+	}
 	return users, err
 }
 
 func (mdb *MysqlDb) GetGroupsForUser(userName string) ([]*UserGroup, error) {
 	const MYSQL_GET_GROUPS_FOR_USER = `SELECT group_name FROM
 	                        orek_user_to_group WHERE user_name = ?;`
-    stmt, err := mdb.Prepare(MYSQL_GET_GROUPS_FOR_USER)
-    groups := make([]*UserGroup, 10)
-    if err == nil {
-        defer stmt.Close()
-        var rows sql.Rows
-        rows, err = mdb.Query(userName)
-        if err == nil {
-            defer rows.Close()
-            for rows.Next() {
-                var groupName string
-                err = rows.Scan(&groupName)
-                if err == nil {
-                    group, err := mdb.GetUserGroup(groupName)
-                    if err == nil {
-                        groups = append(groups, group)
-                    } else {
-                        break
-                    }
-                } else {
-                    log.Printf(`Failed to fetch list of groups of user '%s'`,
-                        userName)
-                    break
-                }
-            }
-            err = rows.Err()
-        } else {
-            log.Printf(`Failed to prepare query to get groups of user %s`,
-                userName)
-        }
-    }
+	stmt, err := mdb.Prepare(MYSQL_GET_GROUPS_FOR_USER)
+	groups := make([]*UserGroup, 10)
+	if err == nil {
+		defer stmt.Close()
+		var rows sql.Rows
+		rows, err = mdb.Query(userName)
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var groupName string
+				err = rows.Scan(&groupName)
+				if err == nil {
+					group, err := mdb.GetUserGroup(groupName)
+					if err == nil {
+						groups = append(groups, group)
+					} else {
+						break
+					}
+				} else {
+					log.Printf(`Failed to fetch list of groups of user '%s'`,
+						userName)
+					break
+				}
+			}
+			err = rows.Err()
+		} else {
+			log.Printf(`Failed to prepare query to get groups of user %s`,
+				userName)
+		}
+	}
 	return groups, err
 }
 
-func (mdb *MysqlDb) AddVariableToGroup(variableId string, varGroupId string) error {
+func (mdb *MysqlDb) AddVariableToGroup(variableId, varGroupId string) error {
 	const MYSQL_ADD_VARIABLE_TO_GROUP = `INSERT IGNORE INTO orek_variable_to_group(
             var_group_id, variable_name ) VALUES( ? ? );`
-	return nil
+	stmt, err := mdb.Prepare(MYSQL_ADD_VARIABLE_TO_GROUP)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(varGroupId, variableId)
+		if err != nil {
+			log.Printf(`Failed to add variable '%s' to group '%s'`, variableId, varGroupId)
+		}
+	} else {
+		log.Printf(`Failed to prepare query to add variable '%s' to group '%s'`,
+			variableId, varGroupId)
+	}
+	return err
 }
 
-func (mdb *MysqlDb) RemoveVariableFromGroup(variableId string, varGroupId string) error {
-	const MYSQL_REMOVE_VARIABLE_FROM_GROUP = `DELETE FROM orek_variable_to_group WHERE var_group_id = ?
-            AND variable_id = ?;`
-	return nil
+func (mdb *MysqlDb) RemoveVariableFromGroup(variableId, varGroupId string) error {
+	const MYSQL_REMOVE_VARIABLE_FROM_GROUP = `DELETE FROM orek_variable_to_group WHERE
+			var_group_id = ? AND variable_id = ?;`
+	stmt, err := mdb.Prepare(MYSQL_REMOVE_VARIABLE_FROM_GROUP)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(varGroupId, variableId)
+		if err != nil {
+			log.Printf(`Failed to remove variable '%s' from group '%s'`,
+				variableId, varGroupId)
+		}
+	} else {
+		log.Printf(`Failed to prepare query to remove variable '%s' from group '%s'`)
+	}
+	return err
 }
 
-func (mdb *MysqlDb) GetVariablesInGroup(groupName string) ([]*Variable, error) {
-	const MYSQL_GET_VARIABLE_IN_GROUP = `SELECT variable_id FROM orek_variable_to_group WHERE var_group_id = ?;`
-	return nil, nil
+func (mdb *MysqlDb) GetVariablesInGroup(varGroupId string) ([]*Variable, error) {
+	const MYSQL_GET_VARIABLE_IN_GROUP = `SELECT variable_id FROM orek_variable_to_group
+					WHERE var_group_id = ?;`
+	stmt, err := mdb.Prepare(MYSQL_GET_VARIABLE_IN_GROUP)
+	variables := make([]*Variable, 10)
+	if err == nil {
+		defer stmt.Close()
+		var rows sql.Rows
+		rows, err = mdb.Query(varGroupId)
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var variableId string
+				err = rows.Scan(&variableId)
+				if err == nil {
+					var variable *Variable
+					variable, err = mdb.GetVariableWithId(variableId)
+					if err == nil {
+						variables = append(variables, variable)
+					} else {
+						break
+					}
+				} else {
+					log.Printf(`Could not find a variable with id '%s'`,
+						varGroupId)
+				}
+			}
+			err = rows.Err()
+		} else {
+			log.Printf(`Failed to list variables in group '%s'`, varGroupId)
+		}
+	} else {
+		log.Printf(`Failed to prepare query to list variables in group '%s'`, varGroupId)
+	}
+	return variables, err
 }
 
 func (mdb *MysqlDb) GetGroupsForVariable(variableId string) ([]*VariableGroup, error) {
-	const MYSQL_GET_GROUPS_FOR_VARIABLE = `SELECT var_group_id FROM orek_variable_to_group WHERE variable_id = ?;`
-	return nil, nil
+	const MYSQL_GET_GROUPS_FOR_VARIABLE = `SELECT var_group_id FROM orek_variable_to_group
+												WHERE variable_id = ?;`
+	stmt, err := mdb.Prepare(MYSQL_GET_GROUPS_FOR_VARIABLE)
+	variableGroups := make([]*VariableGroup, 10)
+	if err == nil {
+		defer stmt.Close()
+		var rows sql.Rows
+		rows, err = mdb.Query(variableId)
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var groupId string
+				err = rows.Scan(&groupId)
+				if err == nil {
+					var group *VariableGroup
+					group, err = mdb.GetVariableWithId(groupId)
+					if err == nil {
+						variableGroups = append(variableGroups, group)
+					} else {
+						break
+					}
+				} else {
+					log.Printf(`Failed to fetch group id from database for variable '%s'`,
+						variableId)
+					break
+				}
+			}
+		} else {
+			log.Printf(`Failed to fetch groups with which variable '%s' is associated`,
+				variableId)
+		}
+	} else {
+		log.Printf(`Failed to prepare query to fetch groups the variable '%s' associated with`,
+			variableId)
+	}
+	return variableGroups, err
 }
 
 func (mdb *MysqlDb) AddVariableValue(variableId, value string) error {
-	const MYSQL_ADD_VARIABLE_VALUE = `INSERT INTO orek_variable_value( variable_id, value ) VALUES( ?, ? );`
-	return nil
+	const MYSQL_ADD_VARIABLE_VALUE = `INSERT INTO orek_variable_value( variable_id, value )
+										VALUES( ?, ? );`
+	stmt, err := mdb.Prepare(MYSQL_ADD_VARIABLE_VALUE)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(variableId, value)
+		if err != nil {
+			log.Printf(`Failed to add value '%s' of variable '%s'`, value, variableId)
+		}
+	} else {
+		log.Printf(`Failed prepare query to add value '%s' of variable '%s'`,
+			value, variableId)
+	}
+	return err
 }
 
 func (mdb *MysqlDb) ClearValuesForVariable(variableId string) error {
-	const MYSQL_CLEAR_VALUES_FOR_VARIABLE = `DELETE FROM orek_variable_value WHERE variable_id = ?;`
+	const MYSQL_CLEAR_VALUES_FOR_VARIABLE = `DELETE FROM orek_variable_value WHERE
+												variable_id = ?;`
+	stmt, err := mdb.Prepare(MYSQL_CLEAR_VALUES_FOR_VARIABLE)
+	if err == nil {
+		defer stmt.Close()
+		_, err = stmt.Exec(variableId)
+		if err != nil {
+			log.Printf(`Failed to clear values of variable '%s'`, variableId)
+		}
+	} else {
+		log.Printf(`Failed to prepare query to clear value for variable '%s'`, variableId)
+	}
 	return nil
 }
 
-func (mdb *MysqlDb) GetValuesForVariable(variableId string) error {
-	const MYSQL_GET_VALUES_FOR_VARIABLE = `DELETE FROM orek_variable_value WHERE variable_id = ?;`
-	return nil
+func (mdb *MysqlDb) GetValuesForVariable(variableId string) ([]*string, error) {
+	const MYSQL_GET_VALUES_FOR_VARIABLE = `DELETE FROM orek_variable_value WHERE
+											variable_id = ?;`
+	stmt, err := mdb.Prepare(MYSQL_GET_VALUES_FOR_VARIABLE)
+	values := make([]*string, 10)
+	if err == nil {
+		defer stmt.Close()
+		var rows sql.Rows
+		rows, err = mdb.Query(variableId)
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var value string
+				err = rows.Scan(&value)
+				if err == nil {
+					values = append(values, value)
+				} else {
+					log.Printf(`Error occured while retrieving a value for variable '%s'`,
+						variableId)
+				}
+			}
+			err = rows.Err()
+		} else {
+			log.Printf(`Failed to fetch values of variable '%s'`, variableId)
+		}
+	} else {
+		log.Printf(`Failed to prepare query to fetch values of variable '%s'`, variableId)
+	}
+	return values, err
 }

@@ -4,6 +4,7 @@ var db OrekDb = nil
 
 func SetDb(dbInst *OrekDb) error {
 	db = dbInst
+	return nil
 }
 
 type OrekDb interface {
@@ -48,5 +49,5 @@ type OrekDb interface {
 
 	AddVariableValue(variableId, value string) error
 	ClearValuesForVariable(variableId string) error
-	GetValuesForVariable(variableId string) error
+	GetValuesForVariable(variableId string) ([]*string, error)
 }
