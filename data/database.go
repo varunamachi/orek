@@ -2,7 +2,7 @@ package data
 
 var db OrekDb = nil
 
-func SetDb(dbInst *OrekDb) error {
+func SetDb(dbInst OrekDb) error {
 	db = dbInst
 	return nil
 }
@@ -14,7 +14,7 @@ type OrekDb interface {
 	CreateOrUpdateUser(user *User) error
 	DeleteUser(userName string) error
 
-	GetAllSources() ([]*User, error)
+	GetAllSources() ([]*Source, error)
 	GetSource(sourceName, owner string) (*Source, error)
 	GetSourceWithId(sourceId string) (*Source, error)
 	CreateOrUpdateSource(source *Source) error
@@ -31,7 +31,7 @@ type OrekDb interface {
 	CreateOrUpdateUserGroup(userGroup *UserGroup) error
 	DeleteUserGroup(userGroupName string) error
 
-	GetAllVariableGroups([]*VariableGroup, error)
+	GetAllVariableGroups()([]*VariableGroup, error)
 	GetVariableGroup(varGroupName, owner string) (*VariableGroup, error)
 	GetVariableGroupWithId(varGroupId string) (*VariableGroup, error)
 	CreateOrUpdateVariableGroup(variableGroup *VariableGroup) error

@@ -1,11 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"github.com/varunamachi/orek/data"
+    "log"
 )
 
 func main() {
-	user := data.User{"the_user", "the", "user", "user@mail.com"}
-	fmt.Println(&user)
+    db, err := data.MySqlInit("hello")
+    if err == nil {
+        data.SetDb(db)
+    } else {
+        log.Fatal("Failed to initialize database")
+    }
+
 }
