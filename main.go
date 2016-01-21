@@ -32,14 +32,9 @@ func main() {
             password = string(pbyte)
         }
 	}
-	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
-		userName,
-		password,
-		host,
-		port,
-		dbName)
-    fmt.Println(connStr)
-	db, err := data.MySqlInit(connStr)
+	options := &data.MysqlOptions{userName, password, host, port, dbName}
+    fmt.Println(options)
+	db, err := data.MysqlInit(options)
 	if err == nil {
 		data.SetDb(db)
 	} else {

@@ -3,7 +3,6 @@ package data
 import (
 	"database/sql"
 	"errors"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 )
 
@@ -11,17 +10,17 @@ type MysqlDb struct {
 	*sql.DB
 }
 
-func MySqlInit(options string) (*MysqlDb, error) {
-	mdb, err := sql.Open("mysql", options)
-	if err != nil {
-		log.Print("Could not connect to mysql database")
-	} else if err = mdb.Ping(); err != nil {
-		log.Print("Could not connect to mysql database")
-	} else {
-		log.Print("Database opened successfuly")
-	}
-	return &MysqlDb{mdb}, err
-}
+//func MySqlInit(options string) (*MysqlDb, error) {
+//	mdb, err := sql.Open("mysql", options)
+//	if err != nil {
+//		log.Print("Could not connect to mysql database")
+//	} else if err = mdb.Ping(); err != nil {
+//		log.Print("Could not connect to mysql database")
+//	} else {
+//		log.Print("Database opened successfuly")
+//	}
+//	return &MysqlDb{mdb}, err
+//}
 
 func (mdb *MysqlDb) GetAllUsers() ([]*User, error) {
 	const MYSQL_GET_ALL_USERS = `SELECT * FROM orek_user;`
