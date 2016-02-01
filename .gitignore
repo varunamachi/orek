@@ -28,3 +28,5 @@ tasks.xml
 
 *.ipr
 *.iws
+
+libraries/*

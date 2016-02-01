@@ -23,7 +23,7 @@ func main() {
 	flag.StringVar(&password, "password", "",
 		"Password, will be asked later if not provided")
     flag.Parse()
-	if len(password) == 0 {
+	if len(password) == 0 && len(userName) != 0 {
         fmt.Printf("Password for %s: ", userName)
 		pbyte, err := terminal.ReadPassword(int(syscall.Stdin))
         if err != nil {
@@ -31,6 +31,8 @@ func main() {
         } else {
             password = string(pbyte)
         }
+	} else {
+		log.Fatal("Insufficient parameters for Orek to run!")
 	}
 	options := &data.MysqlOptions{userName, password, host, port, dbName}
     fmt.Println(options)
