@@ -18,7 +18,7 @@ func (c *Context) SessionChecker(rw web.ResponseWriter,
 	//get the session ID
 	//see if it is still valid
 	//put the user and session objects into the context object
-	next(req, req)
+	next(rw, req)
 }
 
 func (c *Context) Login(resp http.ResponseWriter, req *http.Request) {

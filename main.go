@@ -7,6 +7,7 @@ import (
     "golang.org/x/crypto/ssh/terminal"
 	"log"
     "syscall"
+	_ "github.com/varunamachi/orek/web"
 )
 
 func main() {
