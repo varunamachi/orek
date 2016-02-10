@@ -96,6 +96,13 @@ var queries = [...]string{
     );`,
 
 	`CREATE INDEX idx_orek_var_value ON orek_variable_value( variable_id );`,
+
+//	`CREATE TABLE orel_session(
+//		session_id		CHAR( 36 ) NOT NULL,
+//		user_name		VARCHAR( 256 ) NOT NULL,
+//		start_time		TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+//		data			TEXT
+//	);`,
 }
 
 type MysqlOptions struct {
@@ -154,9 +161,9 @@ func mysqlConnect(options *MysqlOptions) (*MysqlDb, error) {
 }
 
 func mysqlCreate(options *MysqlOptions, db *sql.DB) (*MysqlDb, error) {
-	quert := fmt.Sprintf("CREATE DATABASE %s;", options.DbName)
+	query := fmt.Sprintf("CREATE DATABASE %s;", options.DbName)
 	//	_, err := db.Exec(`CREATE DATABASE ?;`, options.DbName)
-	_, err := db.Exec(quert)
+	_, err := db.Exec(query)
 	var mdb *MysqlDb
 	if err == nil {
 		mdb, err = mysqlConnect(options)

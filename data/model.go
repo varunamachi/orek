@@ -41,6 +41,7 @@ type VariableGroup struct {
 	Access		string `json:"access"`
 }
 
+
 func (user *User) String() string {
 	return "User: " + user.Name + "[" + user.Email + "]"
 }

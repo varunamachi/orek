@@ -39,7 +39,7 @@ func main() {
     fmt.Println(options)
 	db, err := data.MysqlInit(options)
 	if err == nil {
-		data.SetDb(db)
+		data.SetOrekDb(db)
 	} else {
 		log.Fatal("Failed to initialize database")
 	}

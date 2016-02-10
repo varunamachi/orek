@@ -2,9 +2,13 @@ package data
 
 var db OrekDb = nil
 
-func SetDb(dbInst OrekDb) error {
+func SetOrekDb(dbInst OrekDb) error {
 	db = dbInst
 	return nil
+}
+
+func OrekDb() OrekDb {
+	return db
 }
 
 type OrekDb interface {
