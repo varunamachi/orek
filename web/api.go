@@ -3,7 +3,7 @@ package web
 import (
 	"github.com/gocraft/web"
 	"github.com/varunamachi/orek/data"
-	"net/http"
+	// "net/http"
 	"time"
 )
 
@@ -35,7 +35,7 @@ func (c *Context) Login(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) Logout(resp web.ResponseWriter, req *web.Request) {
-
+    
 }
 
 func (c *Context) GetAllUsers(resp web.ResponseWriter, req *web.Request) {

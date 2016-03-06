@@ -2,12 +2,12 @@ package data
 
 var db OrekDb = nil
 
-func SetOrekDb(dbInst OrekDb) error {
+func SetDataSource(dbInst OrekDb) error {
 	db = dbInst
 	return nil
 }
 
-func OrekDb() OrekDb {
+func DataSource() OrekDb {
 	return db
 }
 
