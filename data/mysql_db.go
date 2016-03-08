@@ -53,7 +53,6 @@ func (mdb *MysqlDb) GetAllUsers() ([]*User, error) {
 func (mdb *MysqlDb) GetUser(userName string) (*User, error) {
 	const MYSQL_GET_USER = `SELECT * FROM orek_user WHERE user_name = ?;`
 	stmt, err := mdb.Prepare(MYSQL_GET_USER)
-	var user *User
 	if err == nil {
 		defer stmt.Close()
 		row := stmt.QueryRow(userName)
@@ -75,7 +74,6 @@ func (mdb *MysqlDb) GetUserWithEmail(email string) (*User, error) {
 	const MYSQL_GET_USER_WITH_EMAIL = `SELECT * FROM orek_user
 	                                    WHERE email = "?";`
 	stmt, err := mdb.Prepare(MYSQL_GET_USER_WITH_EMAIL)
-	var user *User
 	if err == nil {
 		defer stmt.Close()
 		row := stmt.QueryRow(email)
@@ -105,6 +103,7 @@ func (mdb *MysqlDb) CreateOrUpdateUser(user *User) error {
             first_name = VALUES( first_name ),
             last_name = VALUES( last_name );
             email = VALUES( email );`
+
 	if user == nil {
 		return errors.New("Create/Update user: Invalid object given")
 	}
@@ -212,7 +211,6 @@ func (mdb *MysqlDb) GetSource(sourceName, owner string) (*Source, error) {
 func (mdb *MysqlDb) GetSourceWithId(sourceId string) (*Source, error) {
 	const MYSQL_GET_SOURCE_WITH_ID = `SELECT * FROM orek_source WHERE
 	                                  source_id = ?;`
-
 	source := &Source{}
 	stmt, err := mdb.Prepare(MYSQL_GET_SOURCE_WITH_ID)
 	if err == nil {

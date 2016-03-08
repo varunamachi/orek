@@ -28,14 +28,15 @@ func (c *Context) Login(resp web.ResponseWriter, req *web.Request) {
 	//Check if the current session already registered to some other login
 	//if so expire this session
 	//Create a new session in the session table
-    userName := req.FormValue("userName")
-    password := req.FormValue("password")
-    sessionId := req.FormValue("sessionId")
-//    data.OrekDb().
+	userName := req.FormValue("userName")
+	password := req.FormValue("password")
+	sessionId := req.FormValue("sessionId")
+	//	data.DataSource().GetUser("varun").FirstName
+
 }
 
 func (c *Context) Logout(resp web.ResponseWriter, req *web.Request) {
-    
+
 }
 
 func (c *Context) GetAllUsers(resp web.ResponseWriter, req *web.Request) {
@@ -174,22 +175,22 @@ func (c *Context) GetVariablesInGroup(resp web.ResponseWriter,
 }
 
 func (c *Context) GetGroupsForVariable(resp web.ResponseWriter,
-    req *web.Request) {
+	req *web.Request) {
 
 }
 
 func (c *Context) AddVariableValue(resp web.ResponseWriter,
-    req *web.Request) {
+	req *web.Request) {
 
 }
 
 func (c *Context) ClearValuesForVariable(resp web.ResponseWriter,
-    req *web.Request) {
+	req *web.Request) {
 
 }
 
 func (c *Context) GetValuesForVariable(resp web.ResponseWriter,
-    req *web.Request) {
+	req *web.Request) {
 
 }
 
