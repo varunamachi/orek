@@ -53,6 +53,7 @@ func (mdb *MysqlDb) GetAllUsers() ([]*User, error) {
 func (mdb *MysqlDb) GetUser(userName string) (*User, error) {
 	const MYSQL_GET_USER = `SELECT * FROM orek_user WHERE user_name = ?;`
 	stmt, err := mdb.Prepare(MYSQL_GET_USER)
+	user := &User{}
 	if err == nil {
 		defer stmt.Close()
 		row := stmt.QueryRow(userName)
@@ -74,6 +75,7 @@ func (mdb *MysqlDb) GetUserWithEmail(email string) (*User, error) {
 	const MYSQL_GET_USER_WITH_EMAIL = `SELECT * FROM orek_user
 	                                    WHERE email = "?";`
 	stmt, err := mdb.Prepare(MYSQL_GET_USER_WITH_EMAIL)
+	user := &User{}
 	if err == nil {
 		defer stmt.Close()
 		row := stmt.QueryRow(email)

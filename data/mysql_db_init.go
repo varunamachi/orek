@@ -97,12 +97,12 @@ var queries = [...]string{
 
 	`CREATE INDEX idx_orek_var_value ON orek_variable_value( variable_id );`,
 
-//	`CREATE TABLE orel_session(
-//		session_id		CHAR( 36 ) NOT NULL,
-//		user_name		VARCHAR( 256 ) NOT NULL,
-//		start_time		TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-//		data			TEXT
-//	);`,
+	//	`CREATE TABLE orel_session(
+	//		session_id		CHAR( 36 ) NOT NULL,
+	//		user_name		VARCHAR( 256 ) NOT NULL,
+	//		start_time		TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	//		data			TEXT
+	//	);`,
 }
 
 type MysqlOptions struct {

@@ -28,11 +28,12 @@ func (c *Context) Login(resp web.ResponseWriter, req *web.Request) {
 	//Check if the current session already registered to some other login
 	//if so expire this session
 	//Create a new session in the session table
-	userName := req.FormValue("userName")
-	password := req.FormValue("password")
-	sessionId := req.FormValue("sessionId")
+	//	userName := req.FormValue("userName")
+	//	password := req.FormValue("password")
+	//	sessionId := req.FormValue("sessionId")
 	//	data.DataSource().GetUser("varun").FirstName
 
+	//	data.DataSource().GetUser(
 }
 
 func (c *Context) Logout(resp web.ResponseWriter, req *web.Request) {

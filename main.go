@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/varunamachi/orek/data"
-    "golang.org/x/crypto/ssh/terminal"
-	"log"
-    "syscall"
 	_ "github.com/varunamachi/orek/web"
+	"golang.org/x/crypto/ssh/terminal"
+	"log"
+	"syscall"
 )
 
 func main() {
@@ -23,23 +23,23 @@ func main() {
 	flag.StringVar(&port, "port", "3306", "Database port")
 	flag.StringVar(&password, "password", "",
 		"Password, will be asked later if not provided")
-    flag.Parse()
+	flag.Parse()
 	if len(password) == 0 && len(userName) != 0 {
-        fmt.Printf("Password for %s: ", userName)
+		fmt.Printf("Password for %s: ", userName)
 		pbyte, err := terminal.ReadPassword(int(syscall.Stdin))
-        if err != nil {
-            fmt.Print(err)
-        } else {
-            password = string(pbyte)
-        }
+		if err != nil {
+			fmt.Print(err)
+		} else {
+			password = string(pbyte)
+		}
 	} else {
 		log.Fatal("Insufficient parameters for Orek to run!")
 	}
 	options := &data.MysqlOptions{userName, password, host, port, dbName}
-    fmt.Println(options)
+	fmt.Println(options)
 	db, err := data.MysqlInit(options)
 	if err == nil {
-		data.SetOrekDb(db)
+		data.SetDataSource(db)
 	} else {
 		log.Fatal("Failed to initialize database")
 	}
