@@ -47,10 +47,6 @@ func (c *Context) Logout(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) GetAllUsers(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 	users, err := data.DataSource().GetAllUsers()
 	if err == nil {
 		marshalled, err := json.Marshal(users)
@@ -65,11 +61,7 @@ func (c *Context) GetAllUsers(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) GetUser(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
-	userName := req.FormValue("userName")
+	userName := req.PathParams["userName"]
 	user, err := data.DataSource().GetUser(userName)
 	if err == nil {
 		mrsh, err := json.Marshal(user)
@@ -84,276 +76,151 @@ func (c *Context) GetUser(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) CreateUser(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
+	//jsonValue := req.FormValue("userDetail")
+	//user := json.Unmarshal(
+	//err := data.DataSource().CreateOrUpdateUser(user)
 
 }
 
 func (c *Context) DeleteUser(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 }
 
 func (c *Context) GetAllSources(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetSource(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetSourceWithId(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) CreateOrUpdateSource(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) DeleteSource(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetAllVariables(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetVariable(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetVariableWithId(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) CreateOrUpdateVariable(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) DeleteVariable(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetAllUserGroups(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetUserGroup(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) CreateOrUpdateUserGroup(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) DeleteUserGroup(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetAllVariableGroups(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetVariableGroup(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetVariableGroupWithId(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) CreateOrUpdateVariableGroup(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) DeleteVariableGroup(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) AddUserToGroup(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) RemoveUserFromGroup(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetUsersInGroup(resp web.ResponseWriter, req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetGroupsForUser(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) AddVariableToGroup(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) RemoveVariableFromGroup(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetVariablesInGroup(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetGroupsForVariable(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) AddVariableValue(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) ClearValuesForVariable(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
 func (c *Context) GetValuesForVariable(resp web.ResponseWriter,
 	req *web.Request) {
-	if !checkSession(c) {
-		fmt.Fprintf(resp, "!Error:Session Error")
-		return
-	}
 
 }
 
