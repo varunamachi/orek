@@ -76,13 +76,30 @@ func (c *Context) GetUser(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) CreateUser(resp web.ResponseWriter, req *web.Request) {
-	//jsonValue := req.FormValue("userDetail")
-	//user := json.Unmarshal(
-	//err := data.DataSource().CreateOrUpdateUser(user)
+	decoder := json.NewDecoder(req.Body)
+	var user data.User
+	if err := decoder.Decode(&user); err == nil {
+		err := data.DataSource().CreateOrUpdateUser(&user)
+		if err != nil {
+			fmt.Fprintf(resp, "!Error:DataSource Error")
+		}
+	} else {
+		//TODO: Create a structure call OrekError and serialize it
+		fmt.Fprintf(resp, "!Error:JSON Decode Error")
+	}
 
 }
 
 func (c *Context) DeleteUser(resp web.ResponseWriter, req *web.Request) {
+	userName := req.PathParams["userName"]
+	if len(userName) > 0 {
+		err := data.DataSource().DeleteUser(userName)
+		if err != nil {
+			//data source error
+		}
+	} else {
+		//error invalid user name
+	}
 }
 
 func (c *Context) GetAllSources(resp web.ResponseWriter, req *web.Request) {
