@@ -53,10 +53,16 @@ func (c *Context) GetAllUsers(resp web.ResponseWriter, req *web.Request) {
 		if err == nil {
 			fmt.Fprintf(resp, string(marshalled))
 		} else {
-			fmt.Fprintf(resp, "!Error:MarshalError")
+			emsg, _ := json.Marshal(OrekError{
+				"MarshalError",
+				"Failed to marshal user list"})
+			fmt.Fprintf(resp, string(emsg))
 		}
 	} else {
-		fmt.Fprintf(resp, "!Error:DataSourceError")
+		emsg, _ := json.Marshal(OrekError{
+			"DataSourceError",
+			"Failed retrieve user list from datasource"})
+		fmt.Fprintf(resp, string(emsg))
 	}
 }
 
@@ -68,10 +74,16 @@ func (c *Context) GetUser(resp web.ResponseWriter, req *web.Request) {
 		if err == nil {
 			fmt.Fprintf(resp, string(mrsh))
 		} else {
-			fmt.Fprintf(resp, "!Error:Marshal Error")
+			emsg, _ := json.Marshal(OrekError{
+				"MarshalError",
+				"Failed to marshal user details"})
+			fmt.Fprintf(resp, string(emsg))
 		}
 	} else {
-		fmt.Fprintf(resp, "!Error:DataSource Error")
+		emsg, _ := json.Marshal(OrekError{
+			"DataSourceError",
+			"Failed to fetch user detail from data source"})
+		fmt.Fprintf(resp, string(emsg))
 	}
 }
 
@@ -81,7 +93,10 @@ func (c *Context) CreateUser(resp web.ResponseWriter, req *web.Request) {
 	if err := decoder.Decode(&user); err == nil {
 		err := data.DataSource().CreateOrUpdateUser(&user)
 		if err != nil {
-			fmt.Fprintf(resp, "!Error:DataSource Error")
+			emsg, _ := json.Marshal(OrekError{
+				"MarshalError",
+				"Failed to marshal user creation result"})
+			fmt.Fprintf(resp, string(emsg))
 		}
 	} else {
 		//TODO: Create a structure call OrekError and serialize it
