@@ -2,7 +2,7 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/gocraft/web"
@@ -47,78 +47,109 @@ func (c *Context) Logout(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) GetAllUsers(resp web.ResponseWriter, req *web.Request) {
+	encoder := json.NewEncoder(resp)
 	users, err := data.DataSource().GetAllUsers()
 	if err == nil {
-		marshalled, err := json.Marshal(users)
-		if err == nil {
-			fmt.Fprintf(resp, string(marshalled))
-		} else {
-			emsg, _ := json.Marshal(OrekError{
+		err = encoder.Encode(users)
+		if err != nil {
+			err = encoder.Encode(OrekError{
 				"MarshalError",
 				"Failed to marshal user list"})
-			fmt.Fprintf(resp, string(emsg))
 		}
 	} else {
-		emsg, _ := json.Marshal(OrekError{
+		err = encoder.Encode(OrekError{
 			"DataSourceError",
 			"Failed retrieve user list from datasource"})
-		fmt.Fprintf(resp, string(emsg))
+	}
+	if err != nil {
+		log.Print(err)
 	}
 }
 
 func (c *Context) GetUser(resp web.ResponseWriter, req *web.Request) {
 	userName := req.PathParams["userName"]
 	user, err := data.DataSource().GetUser(userName)
+	encoder := json.NewEncoder(resp)
 	if err == nil {
-		mrsh, err := json.Marshal(user)
-		if err == nil {
-			fmt.Fprintf(resp, string(mrsh))
-		} else {
-			emsg, _ := json.Marshal(OrekError{
+		err = encoder.Encode(user)
+		if err != nil {
+			err = encoder.Encode(OrekError{
 				"MarshalError",
 				"Failed to marshal user details"})
-			fmt.Fprintf(resp, string(emsg))
 		}
 	} else {
-		emsg, _ := json.Marshal(OrekError{
+		err = encoder.Encode(OrekError{
 			"DataSourceError",
 			"Failed to fetch user detail from data source"})
-		fmt.Fprintf(resp, string(emsg))
+	}
+	if err != nil {
+		log.Print(err)
 	}
 }
 
 func (c *Context) CreateUser(resp web.ResponseWriter, req *web.Request) {
+	encoder := json.NewEncoder(resp)
 	decoder := json.NewDecoder(req.Body)
 	var user data.User
-	if err := decoder.Decode(&user); err == nil {
-		err := data.DataSource().CreateOrUpdateUser(&user)
+	var err error = nil
+	if err = decoder.Decode(&user); err == nil {
+		err = data.DataSource().CreateOrUpdateUser(&user)
 		if err != nil {
-			emsg, _ := json.Marshal(OrekError{
+			err = encoder.Encode(OrekError{
 				"MarshalError",
 				"Failed to marshal user creation result"})
-			fmt.Fprintf(resp, string(emsg))
 		}
 	} else {
-		//TODO: Create a structure call OrekError and serialize it
-		fmt.Fprintf(resp, "!Error:JSON Decode Error")
+		err = encoder.Encode(OrekError{
+			"UnmarshalError",
+			"Failed to create user from given information"})
 	}
-
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func (c *Context) DeleteUser(resp web.ResponseWriter, req *web.Request) {
 	userName := req.PathParams["userName"]
+	encoder := json.NewEncoder(resp)
+	var err error = nil
 	if len(userName) > 0 {
-		err := data.DataSource().DeleteUser(userName)
+		err = data.DataSource().DeleteUser(userName)
 		if err != nil {
-			//data source error
+			err = encoder.Encode(OrekError{
+				"DataSourceError",
+				"Failed to delete user"})
 		}
+
 	} else {
-		//error invalid user name
+		err = encoder.Encode(OrekError{
+			"ArgumentError",
+			"Invalid user name given for deletion"})
+	}
+	if err != nil {
+		log.Print(err)
 	}
 }
 
 func (c *Context) GetAllSources(resp web.ResponseWriter, req *web.Request) {
+	sources, err := data.DataSource().GetAllSources()
+	encoder := json.NewEncoder(resp)
+	if err == nil {
+		err = encoder.Encode(sources)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to marshal source list"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch list of source from database"})
 
+	}
+	if err == nil {
+		log.Print(err)
+	}
 }
 
 func (c *Context) GetSource(resp web.ResponseWriter, req *web.Request) {
