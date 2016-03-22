@@ -153,24 +153,101 @@ func (c *Context) GetAllSources(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) GetSource(resp web.ResponseWriter, req *web.Request) {
-
+	sourceName := req.PathParams["sourceName"]
+	sourceOwner := req.PathParams["sourceOwner"]
+	encoder := json.NewEncoder(resp)
+	source, err := data.DataSource().GetSource(sourceName, sourceOwner)
+	if err == nil {
+		err = encoder.Encode(source)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to marshal source information"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch source information from database"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func (c *Context) GetSourceWithId(resp web.ResponseWriter, req *web.Request) {
-
+	sourceId := req.PathParams["sourceId"]
+	encoder := json.NewEncoder(resp)
+	source, err := data.DataSource().GetSourceWithId(sourceId)
+	if err == nil {
+		err = encoder.Encode(source)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to marshal source information"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch source information from database"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) CreateOrUpdateSource(resp web.ResponseWriter,
-	req *web.Request) {
+func (c *Context) CreateOrUpdateSource(resp web.ResponseWriter, req *web.Request) {
+	decoder := json.NewDecoder(req.Body)
+	encoder := json.NewEncoder(resp)
+	var source data.Source
+	err := decoder.Decode(&source)
+	if err == nil {
+		err = data.DataSource().CreateOrUpdateSource(&source)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"DataSourceError",
+				"Failed to add source to database"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"UnamarshalError",
+			"Could not decode the given source information"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 
 }
 
 func (c *Context) DeleteSource(resp web.ResponseWriter, req *web.Request) {
-
+	sourceId := req.PathParams["sourceId"]
+	err := data.DataSource().DeleteSource(sourceId)
+	encoder := json.NewEncoder(resp)
+	if err != nil {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Could not delete the source with given id"})
+		log.Print(err)
+	}
 }
 
 func (c *Context) GetAllVariables(resp web.ResponseWriter, req *web.Request) {
-
+	vars, err := data.DataSource().GetAllVariables()
+	encoder := json.NewEncoder(resp)
+	if err == nil {
+		err = encoder.Encode(vars)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Could not encode the list of variables"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Could not get list of variables from DB"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func (c *Context) GetVariable(resp web.ResponseWriter, req *web.Request) {
