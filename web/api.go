@@ -251,26 +251,102 @@ func (c *Context) GetAllVariables(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) GetVariable(resp web.ResponseWriter, req *web.Request) {
+	variableName := req.PathParams["variableName"]
+	sourceId := req.PathParams["sourceId"]
+	variable, err := data.DataSource().GetVariable(sourceId, variableName)
+	encoder := json.NewEncoder(resp)
+	if err == nil {
+		err = encoder.Encode(variable)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode variable information"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch information about the given variable"})
+
+	}
+	if err != nil {
+		log.Print(err)
+	}
+}
+
+func (c *Context) GetVariableWithId(resp web.ResponseWriter, req *web.Request) {
+	variableId := req.PathParams["variableId"]
+	variable, err := data.DataSource().GetVariableWithId(variableId)
+	encoder := json.NewEncoder(resp)
+	if err == nil {
+		err = encoder.Encode(variable)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode variable information"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch information about the given variable"})
+
+	}
+	if err != nil {
+		log.Print(err)
+	}
 
 }
 
-func (c *Context) GetVariableWithId(resp web.ResponseWriter,
-	req *web.Request) {
-
-}
-
-func (c *Context) CreateOrUpdateVariable(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) CreateOrUpdateVariable(resp web.ResponseWriter, req *web.Request) {
+	decoder := json.NewDecoder(req.Body)
+	encoder := json.NewEncoder(resp)
+	var variable data.Variable
+	err := decoder.Decode(&variable)
+	if err == nil {
+		err := data.DataSource().CreateOrUpdateVariable(&variable)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"DataSourceError",
+				"Failed to create/update given variable"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"UnmarshalError",
+			"Failed to unmarshal variable information"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func (c *Context) DeleteVariable(resp web.ResponseWriter, req *web.Request) {
-
+	variableId := req.PathParams["variableId"]
+	encoder := json.NewEncoder(resp)
+	err := data.DataSource().DeleteVariable(variableId)
+	if err != nil {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to delete give variable"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) GetAllUserGroups(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) GetAllUserGroups(resp web.ResponseWriter, req *web.Request) {
+	encoder := json.NewEncoder(resp)
+	groups, err := data.DataSource().GetAllUserGroups()
+	if err == nil {
+		err = encoder.Encode(groups)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed marshal user group list"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Could not fetch list of user groups from database"})
+	}
 }
 
 func (c *Context) GetUserGroup(resp web.ResponseWriter, req *web.Request) {
