@@ -350,12 +350,47 @@ func (c *Context) GetAllUserGroups(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) GetUserGroup(resp web.ResponseWriter, req *web.Request) {
-
+	groupName := req.PathParams["groupName"]
+	encoder := json.NewEncoder(resp)
+	group, err := data.DataSource().GetUserGroup(groupName)
+	if err == nil {
+		err = encoder.Encode(group)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode user information"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch user group information"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func (c *Context) CreateOrUpdateUserGroup(resp web.ResponseWriter,
 	req *web.Request) {
-
+	decoder := json.NewDecoder(req.Body)
+	encoder := json.NewEncoder(resp)
+	var group data.UserGroup
+	err := decoder.Decode(&group)
+	if err == nil {
+		err = data.DataSource().CreateOrUpdateUserGroup(&group)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"DataSourceError",
+				"Failed to create/update user group info."})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"UnamrshalError",
+			"Failed to decode user group info for create/update"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func (c *Context) DeleteUserGroup(resp web.ResponseWriter, req *web.Request) {
