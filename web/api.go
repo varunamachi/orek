@@ -394,40 +394,119 @@ func (c *Context) CreateOrUpdateUserGroup(resp web.ResponseWriter,
 }
 
 func (c *Context) DeleteUserGroup(resp web.ResponseWriter, req *web.Request) {
-
+	encoder := json.NewEncoder(resp)
+	groupName := req.PathParams["groupName"]
+	err := data.DataSource().DeleteUserGroup(groupName)
+	if err != nil {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to delete given user"})
+		log.Print(err)
+	}
 }
 
-func (c *Context) GetAllVariableGroups(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) GetAllVariableGroups(resp web.ResponseWriter, req *web.Request) {
+	encoder := json.NewEncoder(resp)
+	varGroups, err := data.DataSource().GetAllVariables()
+	if err == nil {
+		err = encoder.Encode(varGroups)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode variable group list"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch all variable groups"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) GetVariableGroup(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) GetVariableGroup(resp web.ResponseWriter, req *web.Request) {
+	varGroupName := req.PathParams["varGroupName"]
+	owner := req.PathParams["owner"]
+	encoder := json.NewEncoder(resp)
+	varGroup, err := data.DataSource().GetVariableGroup(varGroupName, owner)
+	if err == nil {
+		err = encoder.Encode(varGroup)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode the var group list"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch variable group with give info"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) GetVariableGroupWithId(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) GetVariableGroupWithId(resp web.ResponseWriter, req *web.Request) {
+	varGroupId := req.PathParams["varGroupId"]
+	encoder := json.NewEncoder(resp)
+	varGroup, err := data.DataSource().GetVariableGroupWithId(varGroupId)
+	if err == nil {
+		err = encoder.Encode(varGroup)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode the var group list"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch variable group with give info"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) CreateOrUpdateVariableGroup(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) CreateOrUpdateVariableGroup(resp web.ResponseWriter, req *web.Request) {
+	decoder := json.NewDecoder(req.Body)
+	encoder := json.NewEncoder(resp)
+	var varGroup data.VariableGroup
+	err := decoder.Decode(&varGroup)
+	if err == nil {
+		err = data.DataSource().CreateOrUpdateVariableGroup(&varGroup)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"DataSourceError",
+				"Failed create/update variable group"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"UnmarshalError",
+			"Failed decode variable group info"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) DeleteVariableGroup(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) DeleteVariableGroup(resp web.ResponseWriter, req *web.Request) {
+	encoder := json.NewEncoder(resp)
+	varGroupId := req.PathParams["varGroupId"]
+	err := data.DataSource().DeleteVariableGroup(varGroupId)
+	if err != nil {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to delete variable group"})
+		log.Print(err)
+	}
 }
 
 func (c *Context) AddUserToGroup(resp web.ResponseWriter, req *web.Request) {
 
 }
 
-func (c *Context) RemoveUserFromGroup(resp web.ResponseWriter,
-	req *web.Request) {
+func (c *Context) RemoveUserFromGroup(resp web.ResponseWriter, req *web.Request) {
 
 }
 
