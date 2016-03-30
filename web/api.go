@@ -110,10 +110,10 @@ func (c *Context) CreateUser(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) DeleteUser(resp web.ResponseWriter, req *web.Request) {
-	userName := req.PathParams["userName"]
+	err := req.ParseForm()
+	userName := req.Form.Get("userName")
 	encoder := json.NewEncoder(resp)
-	var err error = nil
-	if len(userName) > 0 {
+	if err == nil && len(userName) > 0 {
 		err = data.DataSource().DeleteUser(userName)
 		if err != nil {
 			err = encoder.Encode(OrekError{
@@ -219,7 +219,8 @@ func (c *Context) CreateOrUpdateSource(resp web.ResponseWriter, req *web.Request
 }
 
 func (c *Context) DeleteSource(resp web.ResponseWriter, req *web.Request) {
-	sourceId := req.PathParams["sourceId"]
+	//sourceId := req.PathParams["sourceId"]
+	sourceId := req.Form.Get("sourceId")
 	err := data.DataSource().DeleteSource(sourceId)
 	encoder := json.NewEncoder(resp)
 	if err != nil {
@@ -319,7 +320,8 @@ func (c *Context) CreateOrUpdateVariable(resp web.ResponseWriter, req *web.Reque
 }
 
 func (c *Context) DeleteVariable(resp web.ResponseWriter, req *web.Request) {
-	variableId := req.PathParams["variableId"]
+	//variableId := req.PathParams["variableId"]
+	variableId := req.Form.Get("variableId")
 	encoder := json.NewEncoder(resp)
 	err := data.DataSource().DeleteVariable(variableId)
 	if err != nil {
@@ -395,7 +397,7 @@ func (c *Context) CreateOrUpdateUserGroup(resp web.ResponseWriter,
 
 func (c *Context) DeleteUserGroup(resp web.ResponseWriter, req *web.Request) {
 	encoder := json.NewEncoder(resp)
-	groupName := req.PathParams["groupName"]
+	groupName := req.Form.Get("groupName")
 	err := data.DataSource().DeleteUserGroup(groupName)
 	if err != nil {
 		encoder.Encode(OrekError{
@@ -492,7 +494,7 @@ func (c *Context) CreateOrUpdateVariableGroup(resp web.ResponseWriter, req *web.
 
 func (c *Context) DeleteVariableGroup(resp web.ResponseWriter, req *web.Request) {
 	encoder := json.NewEncoder(resp)
-	varGroupId := req.PathParams["varGroupId"]
+	varGroupId := req.Form.Get("varGroupId")
 	err := data.DataSource().DeleteVariableGroup(varGroupId)
 	if err != nil {
 		encoder.Encode(OrekError{
@@ -503,11 +505,29 @@ func (c *Context) DeleteVariableGroup(resp web.ResponseWriter, req *web.Request)
 }
 
 func (c *Context) AddUserToGroup(resp web.ResponseWriter, req *web.Request) {
-
+	userId := req.Form.Get("userName")
+	groupId := req.Form.Get("groupId")
+	err := data.DataSource().AddUserToGroup(userId, groupId)
+	if err != nil {
+		encoder := json.NewEncoder(resp)
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to add user to group"})
+		log.Print(err)
+	}
 }
 
 func (c *Context) RemoveUserFromGroup(resp web.ResponseWriter, req *web.Request) {
-
+	userName := req.Form.Get("userName")
+	groupId := req.Form.Get("groupId")
+	err := data.DataSource().RemoveUserFromGroup(userName, groupId)
+	if err != nil {
+		encoder := json.NewEncoder(resp)
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to remove user from group"})
+		log.Print(err)
+	}
 }
 
 func (c *Context) GetUsersInGroup(resp web.ResponseWriter, req *web.Request) {
