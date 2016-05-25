@@ -35,7 +35,12 @@ func main() {
 	} else {
 		log.Fatal("Insufficient parameters for Orek to run!")
 	}
-	options := &data.MysqlOptions{userName, password, host, port, dbName}
+	options := &data.MysqlOptions{
+		UserName: userName, 
+		Password: password, 
+		Host: host, 
+		Port: port, 
+		DbName: dbName}
 	fmt.Println(options)
 	db, err := data.MysqlInit(options)
 	if err == nil {

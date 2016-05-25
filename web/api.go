@@ -531,12 +531,38 @@ func (c *Context) RemoveUserFromGroup(resp web.ResponseWriter, req *web.Request)
 }
 
 func (c *Context) GetUsersInGroup(resp web.ResponseWriter, req *web.Request) {
-
+	groupName := req.Form.Get("groupName")
+	users, err := data.DataSource().GetUsersInGroup(groupName)
+	encoder := json.NewEncoder(resp)
+	if err == nil {
+		err = encoder.Encode(users)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode list of groups for user"})
+		}
+	} 
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) GetGroupsForUser(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) GetGroupsForUser(resp web.ResponseWriter, req *web.Request) {
+	userName := req.Form.Get("userName")
+	encoder := json.NewEncoder(resp)
+	groups, err := data.DataSource().GetGroupsForUser(userName)
+	if err == nil {
+		err = encoder.Encode(groups)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode list of "
+			})
+		}
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
 func (c *Context) AddVariableToGroup(resp web.ResponseWriter,

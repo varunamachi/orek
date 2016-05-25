@@ -1,6 +1,8 @@
 package web
 
-import "github.com/varunamachi/orek/data"
+import (
+	"github.com/varunamachi/orek/data"
+)
 
 type Session struct {
 	Result    bool      `json:"result"`
