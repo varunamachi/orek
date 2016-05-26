@@ -111,7 +111,7 @@ func (c *Context) CreateUser(resp web.ResponseWriter, req *web.Request) {
 
 func (c *Context) DeleteUser(resp web.ResponseWriter, req *web.Request) {
 	err := req.ParseForm()
-	userName := req.Form.Get("userName")
+	userName := req.PathParams["userName"]
 	encoder := json.NewEncoder(resp)
 	if err == nil && len(userName) > 0 {
 		err = data.DataSource().DeleteUser(userName)
@@ -220,7 +220,7 @@ func (c *Context) CreateOrUpdateSource(resp web.ResponseWriter, req *web.Request
 
 func (c *Context) DeleteSource(resp web.ResponseWriter, req *web.Request) {
 	//sourceId := req.PathParams["sourceId"]
-	sourceId := req.Form.Get("sourceId")
+	sourceId := req.PathParams["sourceId"]
 	err := data.DataSource().DeleteSource(sourceId)
 	encoder := json.NewEncoder(resp)
 	if err != nil {
@@ -321,7 +321,7 @@ func (c *Context) CreateOrUpdateVariable(resp web.ResponseWriter, req *web.Reque
 
 func (c *Context) DeleteVariable(resp web.ResponseWriter, req *web.Request) {
 	//variableId := req.PathParams["variableId"]
-	variableId := req.Form.Get("variableId")
+	variableId := req.PathParams["variableId"]
 	encoder := json.NewEncoder(resp)
 	err := data.DataSource().DeleteVariable(variableId)
 	if err != nil {
@@ -397,7 +397,7 @@ func (c *Context) CreateOrUpdateUserGroup(resp web.ResponseWriter,
 
 func (c *Context) DeleteUserGroup(resp web.ResponseWriter, req *web.Request) {
 	encoder := json.NewEncoder(resp)
-	groupName := req.Form.Get("groupName")
+	groupName := req.PathParams["groupName"]
 	err := data.DataSource().DeleteUserGroup(groupName)
 	if err != nil {
 		encoder.Encode(OrekError{
@@ -494,7 +494,7 @@ func (c *Context) CreateOrUpdateVariableGroup(resp web.ResponseWriter, req *web.
 
 func (c *Context) DeleteVariableGroup(resp web.ResponseWriter, req *web.Request) {
 	encoder := json.NewEncoder(resp)
-	varGroupId := req.Form.Get("varGroupId")
+	varGroupId := req.PathParams["varGroupId"]
 	err := data.DataSource().DeleteVariableGroup(varGroupId)
 	if err != nil {
 		encoder.Encode(OrekError{
@@ -505,8 +505,8 @@ func (c *Context) DeleteVariableGroup(resp web.ResponseWriter, req *web.Request)
 }
 
 func (c *Context) AddUserToGroup(resp web.ResponseWriter, req *web.Request) {
-	userId := req.Form.Get("userName")
-	groupId := req.Form.Get("groupId")
+	userId := req.PathParams["userName"]
+	groupId := req.PathParams["groupId"]
 	err := data.DataSource().AddUserToGroup(userId, groupId)
 	if err != nil {
 		encoder := json.NewEncoder(resp)
@@ -518,8 +518,8 @@ func (c *Context) AddUserToGroup(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) RemoveUserFromGroup(resp web.ResponseWriter, req *web.Request) {
-	userName := req.Form.Get("userName")
-	groupId := req.Form.Get("groupId")
+	userName := req.PathParams["userName"]
+	groupId := req.PathParams["groupId"]
 	err := data.DataSource().RemoveUserFromGroup(userName, groupId)
 	if err != nil {
 		encoder := json.NewEncoder(resp)
@@ -531,7 +531,7 @@ func (c *Context) RemoveUserFromGroup(resp web.ResponseWriter, req *web.Request)
 }
 
 func (c *Context) GetUsersInGroup(resp web.ResponseWriter, req *web.Request) {
-	groupName := req.Form.Get("groupName")
+	groupName := req.PathParams["groupName"]
 	users, err := data.DataSource().GetUsersInGroup(groupName)
 	encoder := json.NewEncoder(resp)
 	if err == nil {
@@ -548,7 +548,7 @@ func (c *Context) GetUsersInGroup(resp web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) GetGroupsForUser(resp web.ResponseWriter, req *web.Request) {
-	userName := req.Form.Get("userName")
+	userName := req.PathParams["userName"]
 	encoder := json.NewEncoder(resp)
 	groups, err := data.DataSource().GetGroupsForUser(userName)
 	if err == nil {
@@ -556,8 +556,7 @@ func (c *Context) GetGroupsForUser(resp web.ResponseWriter, req *web.Request) {
 		if err != nil {
 			encoder.Encode(OrekError{
 				"MarshalError",
-				"Failed to encode list of "
-			})
+				"Failed to encode list of groups for given user" })
 		}
 	}
 	if err != nil {
@@ -565,14 +564,36 @@ func (c *Context) GetGroupsForUser(resp web.ResponseWriter, req *web.Request) {
 	}
 }
 
-func (c *Context) AddVariableToGroup(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) AddVariableToGroup(resp web.ResponseWriter, req *web.Request) {
+	varAssoc := struct {
+		VariableId string `json:"variableId"`
+		VarGroupId string `json:"varGroupId"` 
+	}{
+	}
+	encoder := json.NewEncoder(resp)
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(&varAssoc)
+	if err == nil {
+		err = data.DataSource().AddVariableToGroup(varAssoc.VariableId, 
+			varAssoc.VarGroupId)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"DataSourceError",
+				`Failed update the data source with variable - 
+				group association ` })
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DecodeError",
+			"Failed to decode the parametes for var-group association" })
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) RemoveVariableFromGroup(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) RemoveVariableFromGroup(resp web.ResponseWriter, req *web.Request) {
+	
 }
 
 func (c *Context) GetVariablesInGroup(resp web.ResponseWriter,
