@@ -541,7 +541,7 @@ func (c *Context) GetUsersInGroup(resp web.ResponseWriter, req *web.Request) {
 				"MarshalError",
 				"Failed to encode list of groups for user"})
 		}
-	} 
+	}
 	if err != nil {
 		log.Print(err)
 	}
@@ -556,7 +556,7 @@ func (c *Context) GetGroupsForUser(resp web.ResponseWriter, req *web.Request) {
 		if err != nil {
 			encoder.Encode(OrekError{
 				"MarshalError",
-				"Failed to encode list of groups for given user" })
+				"Failed to encode list of groups for given user"})
 		}
 	}
 	if err != nil {
@@ -567,25 +567,24 @@ func (c *Context) GetGroupsForUser(resp web.ResponseWriter, req *web.Request) {
 func (c *Context) AddVariableToGroup(resp web.ResponseWriter, req *web.Request) {
 	varAssoc := struct {
 		VariableId string `json:"variableId"`
-		VarGroupId string `json:"varGroupId"` 
-	}{
-	}
+		VarGroupId string `json:"varGroupId"`
+	}{}
 	encoder := json.NewEncoder(resp)
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&varAssoc)
 	if err == nil {
-		err = data.DataSource().AddVariableToGroup(varAssoc.VariableId, 
+		err = data.DataSource().AddVariableToGroup(varAssoc.VariableId,
 			varAssoc.VarGroupId)
 		if err != nil {
 			encoder.Encode(OrekError{
 				"DataSourceError",
 				`Failed update the data source with variable - 
-				group association ` })
+				group association `})
 		}
 	} else {
 		encoder.Encode(OrekError{
 			"DecodeError",
-			"Failed to decode the parametes for var-group association" })
+			"Failed to decode the parametes for var-group association"})
 	}
 	if err != nil {
 		log.Print(err)
@@ -593,31 +592,99 @@ func (c *Context) AddVariableToGroup(resp web.ResponseWriter, req *web.Request) 
 }
 
 func (c *Context) RemoveVariableFromGroup(resp web.ResponseWriter, req *web.Request) {
-	
+	variableId := req.PathParams["variableId"]
+	varGroupId := req.PathParams["varGroupId"]
+	err := data.DataSource().RemoveVariableFromGroup(variableId, varGroupId)
+	if err != nil {
+		encoder := json.NewEncoder(resp)
+		encoder.Encode(&OrekError{
+			"DataSourceError",
+			"Failed to remove variable from group"})
+		log.Print(err)
+	}
 }
 
-func (c *Context) GetVariablesInGroup(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) GetVariablesInGroup(resp web.ResponseWriter, req *web.Request) {
+	varGroupId := req.PathParams["varGroupId"]
+	encoder := json.NewEncoder(resp)
+	variables, err := data.DataSource().GetVariablesInGroup(varGroupId)
+	if err == nil {
+		err = encoder.Encode(&variables)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode variables in a group"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to get variables in given variable group"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) GetGroupsForVariable(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) GetGroupsForVariable(resp web.ResponseWriter, req *web.Request) {
+	variableId := req.PathParams["variableId"]
+	encoder := json.NewEncoder(resp)
+	varGroups, err := data.DataSource().GetGroupsForVariable(variableId)
+	if err == nil {
+		err = encoder.Encode(varGroups)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode groups for given variable"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch groups for given variable from data source"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) AddVariableValue(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) AddVariableValue(resp web.ResponseWriter, req *web.Request) {
+	varValue := struct {
+		VariableId    string `json:"variableId"`
+		VariableValue string `json:"variableValue"`
+	}{}
+	decoder := json.NewDecoder(req.Body)
+	encoder := json.NewEncoder(resp)
+	err := decoder.Decode(&varValue)
+	if err == nil {
+		err = data.DataSource().AddVariableValue(varValue.VariableId,
+			varValue.VariableValue)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"DataSourceError",
+				"Failed to add variable value to data source"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"UnmarshalError",
+			"Failed to decode variable value information from request"})
+	}
+	if err != nil {
+		log.Print(err)
+	}
 }
 
-func (c *Context) ClearValuesForVariable(resp web.ResponseWriter,
-	req *web.Request) {
-
+func (c *Context) ClearValuesForVariable(resp web.ResponseWriter, req *web.Request) {
+	variableId := req.PathParams["variableId"]
+	encoder := json.NewEncoder(resp)
+	err := data.DataSource().ClearValuesForVariable(variableId)
+	if err != nil {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to ckeab variable value in datasource"})
+		log.Print(err)
+	}
 }
 
-func (c *Context) GetValuesForVariable(resp web.ResponseWriter,
-	req *web.Request) {
+func (c *Context) GetValuesForVariable(resp web.ResponseWriter, req *web.Request) {
 
 }
 
