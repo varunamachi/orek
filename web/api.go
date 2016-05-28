@@ -685,10 +685,24 @@ func (c *Context) ClearValuesForVariable(resp web.ResponseWriter, req *web.Reque
 }
 
 func (c *Context) GetValuesForVariable(resp web.ResponseWriter, req *web.Request) {
-
+	variableId := req.PathParams["variableId"]
+	encoder := json.NewEncoder(resp)
+	values, err := data.DataSource().GetValuesForVariable(variableId)
+	if err == nil {
+		err = encoder.Encode(values)
+		if err != nil {
+			encoder.Encode(OrekError{
+				"MarshalError",
+				"Failed to encode values for given variable"})
+		}
+	} else {
+		encoder.Encode(OrekError{
+			"DataSourceError",
+			"Failed to fetch values for variable from the database"})
+	}
 }
 
 func Setup() error {
-
+	
 	return nil
 }
