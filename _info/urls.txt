@@ -1,0 +1,64 @@
+	GetAllUsers() ([]*User, error)
+    GET /orek/users
+    
+	GetUser(userName string) (*User, error)
+    GET /orek/users/<userName>
+    
+	GetUserWithEmail(email string) (*User, error)
+    GET /orek/users/email/<email>
+    
+	CreateOrUpdateUser(user *User) error
+    PUT /orek/users/<userName>
+    
+	DeleteUser(userName string) error
+	DELETE /orek/users/<userName>
+
+	GetAllSources() ([]*Source, error)
+	GET /orek/sources
+	
+	GetSource(sourceName, owner string) (*Source, error)
+	GET /orek/sources/<sourceOwner>/<sourceName>
+	
+	GetSourceWithId(sourceId string) (*Source, error)
+	GET /orek/sources/<sourceId>
+	
+	CreateOrUpdateSource(source *Source) error
+	PUT /orek/sources/<sourceId>
+	
+	DeleteSource(sourceId string) error
+	DELETE /orek/sources/<sourceId>
+
+	GetAllVariables() ([]*Variable, error)
+	GET /orek/varialbes
+		
+	GetVariable(sourceId, name string) (*Variable, error)
+	GET 
+	
+	GetVariableWithId(variableId string) (*Variable, error)
+	CreateOrUpdateVariable(variable *Variable) error
+	DeleteVariable(variableId string) error
+
+	GetAllUserGroups() ([]*UserGroup, error)
+	GetUserGroup(userGroupName string) (*UserGroup, error)
+	CreateOrUpdateUserGroup(userGroup *UserGroup) error
+	DeleteUserGroup(userGroupName string) error
+
+	GetAllVariableGroups()([]*VariableGroup, error)
+	GetVariableGroup(varGroupName, owner string) (*VariableGroup, error)
+	GetVariableGroupWithId(varGroupId string) (*VariableGroup, error)
+	CreateOrUpdateVariableGroup(variableGroup *VariableGroup) error
+	DeleteVariableGroup(varGroupId string) error
+
+	AddUserToGroup(userName, groupName string) error
+	RemoveUserFromGroup(userName, groupName string) error
+	GetUsersInGroup(groupName string) ([]*User, error)
+	GetGroupsForUser(userName string) ([]*UserGroup, error)
+
+	AddVariableToGroup(variableId, varGroupId string) error
+	RemoveVariableFromGroup(variableId, varGroupId string) error
+	GetVariablesInGroup(groupName string) ([]*Variable, error)
+	GetGroupsForVariable(variableId string) ([]*VariableGroup, error)
+
+	AddVariableValue(variableId, value string) error
+	ClearValuesForVariable(variableId string) error
+	GetValuesForVariable(variableId string) ([]*string, error)
