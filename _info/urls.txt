@@ -1,64 +1,104 @@
-	GetAllUsers() ([]*User, error)
-    GET /orek/users
+GetAllUsers() ([]*User, error)
+GET /orek/users
     
-	GetUser(userName string) (*User, error)
-    GET /orek/users/<userName>
+GetUser(userName string) (*User, error)
+GET /orek/users/<userName>
     
-	GetUserWithEmail(email string) (*User, error)
-    GET /orek/users/email/<email>
+GetUserWithEmail(email string) (*User, error)
+GET /orek/users/email/<email>
     
-	CreateOrUpdateUser(user *User) error
-    PUT /orek/users/<userName>
+CreateOrUpdateUser(user *User) error
+POST /orek/users/
     
-	DeleteUser(userName string) error
-	DELETE /orek/users/<userName>
+DeleteUser(userName string) error
+DELETE /orek/users/<userName>
 
-	GetAllSources() ([]*Source, error)
-	GET /orek/sources
-	
-	GetSource(sourceName, owner string) (*Source, error)
-	GET /orek/sources/<sourceOwner>/<sourceName>
-	
-	GetSourceWithId(sourceId string) (*Source, error)
-	GET /orek/sources/<sourceId>
-	
-	CreateOrUpdateSource(source *Source) error
-	PUT /orek/sources/<sourceId>
-	
-	DeleteSource(sourceId string) error
-	DELETE /orek/sources/<sourceId>
+GetAllSources() ([]*Source, error)
+GET /orek/sources
 
-	GetAllVariables() ([]*Variable, error)
-	GET /orek/varialbes
-		
-	GetVariable(sourceId, name string) (*Variable, error)
-	GET 
-	
-	GetVariableWithId(variableId string) (*Variable, error)
-	CreateOrUpdateVariable(variable *Variable) error
-	DeleteVariable(variableId string) error
+GetSource(sourceName, owner string) (*Source, error)
+GET /orek/sources/<sourceOwner>/<sourceName>
 
-	GetAllUserGroups() ([]*UserGroup, error)
-	GetUserGroup(userGroupName string) (*UserGroup, error)
-	CreateOrUpdateUserGroup(userGroup *UserGroup) error
-	DeleteUserGroup(userGroupName string) error
+GetSourceWithId(sourceId string) (*Source, error)
+GET /orek/sources/<sourceId>
 
-	GetAllVariableGroups()([]*VariableGroup, error)
-	GetVariableGroup(varGroupName, owner string) (*VariableGroup, error)
-	GetVariableGroupWithId(varGroupId string) (*VariableGroup, error)
-	CreateOrUpdateVariableGroup(variableGroup *VariableGroup) error
-	DeleteVariableGroup(varGroupId string) error
+CreateOrUpdateSource(source *Source) error
+POST /orek/sources/
 
-	AddUserToGroup(userName, groupName string) error
-	RemoveUserFromGroup(userName, groupName string) error
-	GetUsersInGroup(groupName string) ([]*User, error)
-	GetGroupsForUser(userName string) ([]*UserGroup, error)
+DeleteSource(sourceId string) errors
+DELETE /orek/sources/<sourceId>
 
-	AddVariableToGroup(variableId, varGroupId string) error
-	RemoveVariableFromGroup(variableId, varGroupId string) error
-	GetVariablesInGroup(groupName string) ([]*Variable, error)
-	GetGroupsForVariable(variableId string) ([]*VariableGroup, error)
+GetAllVariables() ([]*Variable, error)
+GET /orek/varialbes
 
-	AddVariableValue(variableId, value string) error
-	ClearValuesForVariable(variableId string) error
-	GetValuesForVariable(variableId string) ([]*string, error)
+GetVariable(sourceId, name string) (*Variable, error)
+GET /orek/variables/<sourceId>/<variableName>
+
+GetVariableWithId(variableId string) (*Variable, error)
+GET /orek/variables/<variableId>
+
+CreateOrUpdateVariable(variable *Variable) error
+POST /orek/variables 
+
+DeleteVariable(variableId string) error
+DELETE /orek/variables/<variableId>
+
+GetAllUserGroups() ([]*UserGroup, error)
+GET /orek/userGroups
+
+GetUserGroup(userGroupName string) (*UserGroup, error)
+GET /orek/userGroups/<userGroupName>
+
+CreateOrUpdateUserGroup(userGroup *UserGroup) error
+POST /orek/userGroups
+
+DeleteUserGroup(userGroupName string) error
+DELETE /orek/userGroups/<userGroupName>
+
+GetAllVariableGroups()([]*VariableGroup, error)
+GET /orek/variableGroups/
+
+GetVariableGroup(varGroupName, owner string) (*VariableGroup, error)
+GET /orek/variableGroups/<varGroupOwner>/<varGroupName>
+
+GetVariableGroupWithId(varGroupId string) (*VariableGroup, error)
+GET /orek/variableGroups/<varGroupId>
+
+CreateOrUpdateVariableGroup(variableGroup *VariableGroup) error
+POST /orek/variableGroups/
+
+DeleteVariableGroup(varGroupId string) error
+DELETE /orek/variableGroups/<varGroupId>
+
+AddUserToGroup(userName, groupName string) error
+POST /orek/groups/<groupName>/<userName>
+
+RemoveUserFromGroup(userName, groupName string) error
+DELETE /orek/groups/<groupName>/users/<userName>
+
+GetUsersInGroup(groupName string) ([]*User, error)
+GET /orek/groups/<groupName>/users
+
+GetGroupsForUser(userName string) ([]*UserGroup, error)
+GET /orek/users/<userName>/groups/
+
+AddVariableToGroup(variableId, varGroupId string) error
+POST /orek/variableGroups/<varGroupId>/variables
+
+RemoveVariableFromGroup(variableId, varGroupId string) error
+DELELTE /orek/variableGroups/<varGroupId>/variables/<variableId>
+
+GetVariablesInGroup(groupName string) ([]*Variable, error)
+GET /orek/variableGroups/<varGroupId>
+
+GetGroupsForVariable(variableId string) ([]*VariableGroup, error)
+GET /orek/variables/<variableId>/groups
+
+AddVariableValue(variableId, value string) error
+POST /orek/variables/<variableId>/values/
+
+ClearValuesForVariable(variableId string) error
+DELETE /orek/variables/<variableId>/values/
+
+GetValuesForVariable(variableId string) ([]*string, error)
+GET /orek/variables/<variableId>/values/
