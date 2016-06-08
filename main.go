@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/varunamachi/orek/data"
-	_ "github.com/varunamachi/orek/web"
-	"golang.org/x/crypto/ssh/terminal"
 	"log"
 	"syscall"
+
+	"github.com/varunamachi/orek/data"
+	orekweb "github.com/varunamachi/orek/web"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
@@ -36,13 +37,14 @@ func main() {
 		log.Fatal("Insufficient parameters for Orek to run!")
 	}
 	options := &data.MysqlOptions{
-		UserName: userName, 
-		Password: password, 
-		Host: host, 
-		Port: port, 
-		DbName: dbName}
-	fmt.Println(options)
+		UserName: userName,
+		Password: password,
+		Host:     host,
+		Port:     port,
+		DbName:   dbName}
+	// fmt.Println(options)
 	db, err := data.MysqlInit(options)
+	orekweb.Serve()
 	if err == nil {
 		data.SetDataSource(db)
 	} else {

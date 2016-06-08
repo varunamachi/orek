@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"time"
 
@@ -707,6 +708,6 @@ func (c *Context) GetValuesForVariable(resp web.ResponseWriter, req *web.Request
 }
 
 func Setup() error {
-	
+
 	return nil
 }
