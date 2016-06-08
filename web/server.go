@@ -30,6 +30,15 @@ func mapVariableUrls(router *web.Router) {
 		Get("/orek/v0/variables/:variableId", (*Context).GetVariableWithId).
 		Post("/orek/v0/variables", (*Context).CreateOrUpdateVariable).
 		Delete("/orek/v0/variables/:variableId", (*Context).DeleteVariable)
+		//Also add variable value related functions
+}
+
+func mapUserGroupUrls(router *web.Router) {
+	
+}
+
+func mapVariableGroupUrls(router *web.Router) {
+	
 }
 
 func def(router *web.Router) {
