@@ -46,6 +46,10 @@ func (c *Context) Logout(resp web.ResponseWriter, req *web.Request) {
 	//resp.Write
 }
 
+func (c *Context) Default(resp web.ResponseWriter, req *web.Request) {
+	fmt.Fprint(resp, "Hi")
+}
+
 func (c *Context) GetAllUsers(resp web.ResponseWriter, req *web.Request) {
 	encoder := json.NewEncoder(resp)
 	users, err := data.DataSource().GetAllUsers()
