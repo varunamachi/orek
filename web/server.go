@@ -11,7 +11,8 @@ func mapUserUrls(router *web.Router) {
 		Get("/orek/v0/users", (*Context).GetAllUsers).
 		Get("/orek/v0/users/:userName", (*Context).GetUser).
 		Post("/orek/v0/users", (*Context).CreateUser).
-		Delete("/orek/v0/users/:userName", (*Context).DeleteUser)
+		Delete("/orek/v0/users/:userName", (*Context).DeleteUser).
+		Get("/orek/v0/users/:userName/groups", (*Context).GetGroupsForUser)
 }
 
 func mapSourceUrls(router *web.Router) {
@@ -34,7 +35,14 @@ func mapVariableUrls(router *web.Router) {
 }
 
 func mapUserGroupUrls(router *web.Router) {
-	
+	router.
+		Get("/orek/v0/userGroups", (*Context).GetAllUserGroups).
+		Get("/orek/v0/userGroups/:groupName", (*Context).GetUserGroup).
+		Post("/orek/v0/userGroups", (*Context).CreateOrUpdateUserGroup).
+		Delete("/orek/v0/userGroups/:groupName", (*Context).DeleteUserGroup).
+		Get("/orek/v0/userGroups/users", (*Context).GetUsersInGroup).
+		Put("/orek/v0/userGroups/:groupName/:userName", (*Context).AddUserToGroup).
+		Delete("/orek/v0/userGroups/:groupName/:userName", (*Context).RemoveUserFromGroup)
 }
 
 func mapVariableGroupUrls(router *web.Router) {
