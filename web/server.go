@@ -30,8 +30,11 @@ func mapVariableUrls(router *web.Router) {
 		Get("/orek/v0/variables/:sourceId/:variableName", (*Context).GetVariable).
 		Get("/orek/v0/variables/:variableId", (*Context).GetVariableWithId).
 		Post("/orek/v0/variables", (*Context).CreateOrUpdateVariable).
-		Delete("/orek/v0/variables/:variableId", (*Context).DeleteVariable)
-		//Also add variable value related functions
+		Delete("/orek/v0/variables/:variableId", (*Context).DeleteVariable).
+		Get("/orek/variables/:variableId/groups", (*Context).GetGroupsForVariable).
+		Put("/orek/variables/:variableId/values", (*Context).AddVariableValue).
+		Get("/orek/variables/:variableId/values", (*Context).GetValuesForVariable).
+		Delete("/orek/variables/:variableId/values", (*Context).ClearValuesForVariable)
 }
 
 func mapUserGroupUrls(router *web.Router) {
@@ -46,7 +49,14 @@ func mapUserGroupUrls(router *web.Router) {
 }
 
 func mapVariableGroupUrls(router *web.Router) {
-	
+	router.
+		Get("/orek/v0/variableGroups", (*Context).GetAllVariableGroups).
+		Get("/orek/v0/variableGroups/:owner/:varGroupName", (*Context).GetVariableGroup).
+		Get("/orek/v0/variableGroups/:varGroupId", (*Context).GetVariableGroupWithId).
+		Post("/orek/v0/variableGroups", (*Context).CreateOrUpdateVariableGroup).
+		Delete("/orek/v0/variableGroups/:varGroupId", (*Context).DeleteVariableGroup).
+		Put("/orek/v0/variableGroups/:varGroupId/:variableId", (*Context).AddVariableToGroup).
+		Get("/orek/v0/variableGroups/:varGroupId", (*Context).GetVariablesInGroup)
 }
 
 func def(router *web.Router) {

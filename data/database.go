@@ -1,5 +1,11 @@
 package data
 
+import (
+	"log"
+
+	"github.com/varunamachi/orek/data"
+)
+
 var db OrekDb = nil
 
 func SetDataSource(dbInst OrekDb) error {
@@ -8,6 +14,9 @@ func SetDataSource(dbInst OrekDb) error {
 }
 
 func DataSource() OrekDb {
+	if data.DataSource() == nil {
+		log.Fatal("DataSource is Nil!!!")
+	}
 	return db
 }
 
@@ -35,7 +44,7 @@ type OrekDb interface {
 	CreateOrUpdateUserGroup(userGroup *UserGroup) error
 	DeleteUserGroup(userGroupName string) error
 
-	GetAllVariableGroups()([]*VariableGroup, error)
+	GetAllVariableGroups() ([]*VariableGroup, error)
 	GetVariableGroup(varGroupName, owner string) (*VariableGroup, error)
 	GetVariableGroupWithId(varGroupId string) (*VariableGroup, error)
 	CreateOrUpdateVariableGroup(variableGroup *VariableGroup) error

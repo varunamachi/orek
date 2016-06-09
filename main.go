@@ -44,9 +44,9 @@ func main() {
 		DbName:   dbName}
 	// fmt.Println(options)
 	db, err := data.MysqlInit(options)
-	orekweb.Serve()
 	if err == nil {
 		data.SetDataSource(db)
+		orekweb.Serve()
 	} else {
 		log.Fatal("Failed to initialize database")
 	}
