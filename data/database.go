@@ -2,8 +2,6 @@ package data
 
 import (
 	"log"
-
-	"github.com/varunamachi/orek/data"
 )
 
 var db OrekDb = nil
@@ -14,7 +12,7 @@ func SetDataSource(dbInst OrekDb) error {
 }
 
 func DataSource() OrekDb {
-	if data.DataSource() == nil {
+	if db == nil {
 		log.Fatal("DataSource is Nil!!!")
 	}
 	return db
